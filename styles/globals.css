@@ -30,3 +30,77 @@ img {
   /* Safari seems to support, but seems deprecated and does the same thing as the others. */
   image-rendering: -webkit-optimize-contrast;
 }
+
+.pagination-container {
+  /* background: red; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+}
+
+.pagination-page-link {
+  background: #333;
+  padding: 10px;
+  display: flex;
+  border-radius: 40px;
+  height: 60px;
+  width: 60px;
+  font-size: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.previous,
+.next {
+  background: white;
+  color: black;
+  padding: 10px;
+  display: flex;
+  border-radius: 40px;
+  height: 60px;
+  width: 60px;
+  font-size: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.previous:hover,
+.next:hover {
+  opacity: 0.75;
+}
+
+.previous.disabled,
+.next.disabled,
+.previous.disabled:hover,
+.next.disabled:hover {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.selected .pagination-page-link,
+.selected .pagination-page-link:hover {
+  background: red;
+  color: black;
+}
+
+.pagination-page-link:hover {
+  background: rgb(68, 68, 68);
+}
+
+.break {
+  padding: 9px;
+  display: flex;
+  align-content: center;
+  item-content: center;
+  justify-content: center;
+}
+
+.pagination-wrapper {
+  padding-top: 50px;
+  padding-bottom: 150px;
+}
