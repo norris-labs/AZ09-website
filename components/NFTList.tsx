@@ -9,9 +9,10 @@ import Grid from "@mui/material/Grid";
 
 type NFTListProps = {
   sendMintTX: (id: number) => void;
+  isNFTMinted: (id: number) => void;
 };
 
-export function NFTList({ sendMintTX }: NFTListProps) {
+export function NFTList({ sendMintTX, isNFTMinted }: NFTListProps) {
   return (
     <Grid container spacing={{ xs: 2, md: 3 }}>
       {metadata.map((nftData) => {
@@ -47,6 +48,8 @@ export function NFTList({ sendMintTX }: NFTListProps) {
                     Character Left: {leftCharacter}
                     <br />
                     Character Right: {rightCharacter}
+                    <br />
+                    {/* Is Minted: {isNFTMinted(nftData.edition)} */}
                   </span>
                 </Box>
                 <Button
