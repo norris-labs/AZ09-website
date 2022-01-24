@@ -1,9 +1,47 @@
-import type { NextPage } from 'next'
+import Image from "next/image";
+import {  useEtherBalance, useEthers } from '@usedapp/core'
+import {Button, Typography} from '@mui/material'
 import Head from 'next/head'
-import Image from 'next/image'
+import type { NextPage } from 'next'
+import { utils } from 'ethers';
+import Box from "@mui/material/Box";
 import styles from '../styles/Home.module.css'
+import { NFTList } from '../components/NFTList';
+import { useMaxMintable } from "../hooks/useMaxMintable";
+import { useMint } from "../hooks/useMint";
+import { useCost } from "../hooks/useCost";
+
+type Attribute = {
+  trait_type: string
+  value: string
+}
+
+type TokenMetaData = {
+  name: string
+  description: string
+  image: string
+  dna: string
+  edition: string
+  date: string
+  variation: string
+  attributes: Attribute[]
+}
 
 const Home: NextPage = () => {
+  const maxMintable = useMaxMintable()
+  const cost = useCost()
+
+  const {state: mintNFTState, send: mintNFT} = useMint()
+
+  const { activateBrowserWallet, account, deactivate, active, chainId } = useEthers()
+  const etherBalance = useEtherBalance(account)
+
+  function sendMintTX(id: number) {
+    mintNFT(id, {
+      value: utils.parseEther('50')
+    });
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,59 +50,45 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div>
+        {/* State: {mintNFTState && JSON.stringify(mintNFTState)} */}
+        <Box
+          sx={{
+            mt: 3,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-end'
+          }}
         >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+          {account ?
+            <div>
+              <Button variant="outlined">{account}</Button>
+            </div>
+            :
+            <div>
+              <Button variant="outlined" onClick={() => activateBrowserWallet()}>
+                Connect Wallet
+              </Button>
+            </div>
+          }
+          {/* <p>Max Mintable: {maxMintable ? maxMintable.toNumber() : 0}</p>
+          <p>Cost: {cost ? utils.formatEther(cost) : 0}</p> */}
+        </Box>
+
+        <Box sx={{ my: 5 }}>
+          <Image
+            src={`/logo.png`}
+            alt="me"
+            width="1012px"
+            height="448px"
+          />
+          <Typography variant="h4" component="h1">
+            AZ09 is a collection of 1296 unique, programmatically generated monogram <a target="_blank" href="https://ethereum.org/en/nft/">NFTs</a> on the <a target="_blank" href="https://fantom.foundation/">Fantom network</a>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Lzight.
+          </Typography>
+        </Box>
+
+        <NFTList sendMintTX={sendMintTX}/>
+      </div>
     </div>
   )
 }

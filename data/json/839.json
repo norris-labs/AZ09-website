@@ -1,0 +1,24 @@
+{
+  "name": "AZ09 Light #839",
+  "description": "AZ09 is a collection of 1296 unique, programmatically generated monograms. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two flavors: dark and light.",
+  "image": "ipfs://QmZep6CUeQqWVWSZj1Fv3pNYATEVZuL9iH6zJM3Y2CpNFx/839.png",
+  "dna": "02f6cbfcef4cb369669435292835906fe36015fb",
+  "edition": 839,
+  "date": 1642747050484,
+  "variation": "light",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "white"
+    },
+    {
+      "trait_type": "Left",
+      "value": "H"
+    },
+    {
+      "trait_type": "Right",
+      "value": "1"
+    }
+  ],
+  "compiler": "HashLips Art Engine"
+}
