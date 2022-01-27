@@ -1,9 +1,18 @@
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
+import truncateEthAddress from "truncate-eth-address";
+import Blockies from "react-blockies";
 
-{
-  /* State: {mintNFTState && JSON.stringify(mintNFTState)} */
+function onErrorHandler(e) {
+  if (e.name === "UnsupportedChainIdError") {
+    alert("Switch to Fantom Chain");
+    return;
+  } else {
+    alert(e);
+    return;
+  }
 }
+
 export function Navigation({
   account,
   openNotice,
@@ -34,13 +43,14 @@ export function Navigation({
               },
             }}
           >
-            {account}
+            <Blockies className="blockie" seed={account} />
+            {truncateEthAddress(account)}
           </Button>
         </div>
       ) : (
         <div>
           <Button
-            onClick={() => activateBrowserWallet()}
+            onClick={() => activateBrowserWallet(onErrorHandler)}
             sx={{
               background: "white",
               border: "none",
@@ -55,7 +65,7 @@ export function Navigation({
         </div>
       )}
 
-      <button onClick={openNotice}>Open Notice</button>
+      {/* <button onClick={openNotice}>Open Notice</button> */}
       {/* <p>Max Mintable: {maxMintable ? maxMintable.toNumber() : 0}</p>
       <p>Cost: {cost ? utils.formatEther(cost) : 0}</p> */}
     </Box>
