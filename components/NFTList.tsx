@@ -1,14 +1,13 @@
 import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { capitalize } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
-import { NFTMetaData } from "./PaginatedNFTs";
 import { TransactionStatus } from "@usedapp/core";
+import { MintButton } from "./MintButton";
+import { TocDisplay } from "./TocDisplay";
 
 type NFTListProps = {
   currentItems: NFTMetaData[] | null;
@@ -16,12 +15,14 @@ type NFTListProps = {
   isNFTMinted: (id: number) => boolean;
   txState: TransactionStatus;
   mintTarget: number | null;
+  cost: string | number;
 };
 
 export function NFTList({
   currentItems,
   sendMintTX,
   isNFTMinted,
+  cost,
   mintTarget,
   txState,
 }: NFTListProps) {
@@ -54,16 +55,22 @@ export function NFTList({
                     />
                   </div>
                 </CardMedia>
-                <Box sx={{ my: 2 }}>
+                <Box className="monospaced" sx={{ my: 2 }}>
                   <span>
-                    ID: {item.edition}
-                    <br />
-                    Edition: {item.variation}
-                    <br />
-                    Character Left: {leftCharacter}
-                    <br />
-                    Character Right: {rightCharacter}
-                    <br />
+                    <TocDisplay first="ID" second={item.edition} />
+                    <TocDisplay
+                      first="Edition"
+                      second={capitalize(item.variation)}
+                    />
+                    <TocDisplay first="Character Left" second={leftCharacter} />
+                    <TocDisplay
+                      first="Character Right"
+                      second={rightCharacter}
+                    />
+                    <TocDisplay
+                      first="Cost"
+                      second={`${cost === 0 ? "?" : cost} FTM`}
+                    />
                   </span>
                 </Box>
                 <MintButton
@@ -79,51 +86,5 @@ export function NFTList({
         );
       })}
     </Grid>
-  );
-}
-
-type MintButtonProps = {
-  txState: TransactionStatus;
-  item: NFTMetaData;
-  sendMintTX: (id: number) => void;
-  mintTarget: number | null;
-  isNFTMinted: (id: number) => boolean;
-};
-
-function MintButton({
-  item,
-  txState,
-  sendMintTX,
-  isNFTMinted,
-  mintTarget,
-}: MintButtonProps) {
-  if (txState?.status === "PendingSignature" && mintTarget === item.edition) {
-    return (
-      <LoadingButton
-        style={{ width: "100%" }}
-        loading
-        variant="contained"
-        disabled={false}
-      >
-        Waiting for signature
-      </LoadingButton>
-    );
-  }
-  return isNFTMinted(item.edition) ? (
-    <Button
-      style={{ width: "100%" }}
-      variant="outlined"
-      endIcon={<OpenInNewIcon />}
-    >
-      Already Minteed
-    </Button>
-  ) : (
-    <Button
-      style={{ width: "100%" }}
-      variant="contained"
-      onClick={() => sendMintTX(item.edition)}
-    >
-      Mint
-    </Button>
   );
 }

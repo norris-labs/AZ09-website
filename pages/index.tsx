@@ -16,7 +16,7 @@ import { useCost } from "../hooks/useCost";
 const Home: NextPage = () => {
   const { activateBrowserWallet, account, deactivate, active, chainId } = useEthers()
 
-  const cost = useCost()
+  const cost: number = useCost()
   const mintedTokenIDs = useMintedTokenIDs()
   const {state: mintNFTState, send: mintNFT} = useMint()
   const [toastOpen, setToastOpen] = useState(false);
@@ -38,13 +38,6 @@ const Home: NextPage = () => {
     setToastOpen(true);
   };
 
-  function handleClose(event: SyntheticEvent | Event, reason?: string) {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setToastOpen(false);
-  };
 
   function sendMintTX(id: number) {
     setMintTarget(id);
@@ -69,31 +62,48 @@ const Home: NextPage = () => {
         mx: 10
       }}>
         <Navigation openNotice={openNotice} account={account} activateBrowserWallet={activateBrowserWallet} />
-        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)}
-        <br/>
-        {process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
-        <br/>
-        {JSON.stringify(mintNFTState)}
-        <br/>
-        Cost: {cost ? utils.formatEther(cost) : 0}
         <Box sx={{
           my: 10
         }}>
-          <Typography variant="h4" component="h1">
-            AZ09 is a collection of 2,592 unique, programmatically generated monogram <Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link> on the <Link target="_blank" href="https://fantom.foundation/">Fantom network</Link>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two editions: Dark and Light.
+          <Typography variant="h3" component="h1">
+            AZ09 is a collection of 2,592 unique, programmatically generated monogram <Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link> on the <Link target="_blank" href="https://fantom.foundation/">Fantom network</Link>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.
           </Typography>
         </Box>
-        <Content mintTarget={mintTarget}txState={mintNFTState} sendMintTX={sendMintTX} isNFTMinted={isNFTMinted}/>
-        {/* <Snackbar
-          open={true}
-          autoHideDuration={6000}
-          onClose={handleClose}
-          message={toastMessage}
-          action={Notice}
-        /> */}
+        <Content cost={cost ? utils.formatEther(cost) : 0} mintTarget={mintTarget}txState={mintNFTState} sendMintTX={sendMintTX} isNFTMinted={isNFTMinted}/>
+
+
+        <Box sx={{
+          p: 10
+        }}>
+          mintedTokenIDs: {JSON.stringify(mintedTokenIDs)}
+          <br/>
+          {process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
+          <br/>
+          {JSON.stringify(mintNFTState)}
+          <br/>
+          Cost: {cost ? utils.formatEther(cost) : 0}
+        </Box>
       </Box>
     </div>
   )
 }
 
 export default Home
+
+
+
+  // function handleClose(event: SyntheticEvent | Event, reason?: string) {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+
+  //   setToastOpen(false);
+  // };
+
+      // <Snackbar
+      //     open={true}
+      //     autoHideDuration={6000}
+      //     onClose={handleClose}
+      //     message={toastMessage}
+      //     action={Notice}
+      //   /> 

@@ -1,88 +1,81 @@
+import { useState } from "react";
+
 import { TransactionStatus } from "@usedapp/core";
 import { PaginatedNFTs } from "./PaginatedNFTs";
-import { styled } from "@mui/system";
 import Box from "@mui/material/Box";
-import TabUnstyled, { tabUnstyledClasses } from "@mui/base/TabUnstyled";
-import { buttonUnstyledClasses } from "@mui/base/ButtonUnstyled";
-import TabsUnstyled from "@mui/base/TabsUnstyled";
-import TabsListUnstyled from "@mui/base/TabsListUnstyled";
-import TabPanelUnstyled from "@mui/base/TabPanelUnstyled";
+import { Tab, TabContainer, TabPanel, TabList } from "./Tabs";
 
-const Tab = styled(TabUnstyled)`
-  color: white;
-  cursor: pointer;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  align-content: center;
-  font-size: 1.45rem;
-  font-weight: bold;
-  background-color: transparent;
-  width: 100%;
-  padding: 20px;
-  border: none;
-  display: flex;
-  justify-content: center;
-  outline: none;
-
-  &:hover {
-    background-color: #555555;
-  }
-
-  &:focus {
-    color: #fff;
-    outline: none;
-    outline-offset: 2px;
-  }
-
-  &.${tabUnstyledClasses.selected} {
-    background-color: white;
-    color: black;
-  }
-
-  &.${buttonUnstyledClasses.disabled} {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const TabPanel = styled(TabPanelUnstyled)`
-  width: 100%;
-  font-family: IBM Plex Sans, sans-serif;
-  font-size: 0.875rem;
-`;
-
-const TabList = styled(TabsListUnstyled)`
-  min-width: 320px;
-  background-color: #333232;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-content: space-between;
-  border-radius: 5px;
-  overflow: hidden;
-`;
-
-export function Content({
-  isNFTMinted,
-  sendMintTX,
-  txState,
-  mintTarget,
-}: {
+type ContentProps = {
   isNFTMinted: (id: number) => boolean;
   sendMintTX: (id: number) => void;
   txState: TransactionStatus;
   mintTarget: number | null;
-}) {
+  cost: string | number;
+};
+
+export function Content({
+  isNFTMinted,
+  sendMintTX,
+  cost,
+  txState,
+  mintTarget,
+}: ContentProps) {
+  const [currentTab, setCurrentTab] = useState<number | string>(0);
+
   return (
-    <TabsUnstyled defaultValue={0}>
+    <TabContainer defaultValue={0}>
       <TabList>
-        <Tab>(1) Light Edition</Tab>
-        <Tab>(2) Dark Edition</Tab>
+        <Tab
+          onChange={(_e, value) => {
+            setCurrentTab(value);
+          }}
+        >
+          <Box
+            sx={{
+              background: `${currentTab === 0 ? "black" : "white"}`,
+              color: `${currentTab === 0 ? "white" : "black"}`,
+              width: "1.5rem",
+              height: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "100%",
+              fontSize: ".95rem",
+              marginRight: "5px",
+            }}
+          >
+            1
+          </Box>{" "}
+          Light Edition
+        </Tab>
+        <Tab
+          onChange={(_e, value) => {
+            setCurrentTab(value);
+          }}
+        >
+          <Box
+            sx={{
+              background: `${currentTab === 1 ? "black" : "white"}`,
+              color: `${currentTab === 1 ? "white" : "black"}`,
+              width: "1.5rem",
+              height: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "100%",
+              fontSize: ".95rem",
+              marginRight: "5px",
+            }}
+          >
+            2
+          </Box>
+          Dark Edition
+        </Tab>
       </TabList>
 
       <TabPanel value={0}>
         <PaginatedNFTs
+          cost={cost}
           itemsPerPage={30}
           isNFTMinted={isNFTMinted}
           sendMintTX={sendMintTX}
@@ -92,15 +85,6 @@ export function Content({
       </TabPanel>
 
       <TabPanel value={1}>Other One</TabPanel>
-    </TabsUnstyled>
+    </TabContainer>
   );
-}
-
-{
-  /* <Box
-          sx={{
-            pt: 1,
-          }}
-        >
-        </Box> */
 }
