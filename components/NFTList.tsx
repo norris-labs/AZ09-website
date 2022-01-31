@@ -48,8 +48,8 @@ export function NFTList({
                     }}
                   >
                     <Image
-                      src={`/images/${item.edition}.png`}
-                      alt="me"
+                      src={`/images/light/${item.edition}.png`}
+                      alt="nft-image"
                       layout="fill"
                       objectFit="cover"
                     />

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { Tab, TabContainer, TabList, TabPanel } from "./Tabs";
 
-import { TransactionStatus } from "@usedapp/core";
-import { PaginatedNFTs } from "./PaginatedNFTs";
 import Box from "@mui/material/Box";
-import { Tab, TabContainer, TabPanel, TabList } from "./Tabs";
+import { PaginatedNFTs } from "./PaginatedNFTs";
+import { TransactionStatus } from "@usedapp/core";
+import { useState } from "react";
 
 type ContentProps = {
   isNFTMinted: (id: number) => boolean;

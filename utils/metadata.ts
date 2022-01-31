@@ -1,4 +1,4 @@
-import metadataJSON from "../data/json/_metadata.json";
+import metadataJSON from "../data/json/light/_metadata.json";
 
 function sortABC(a: NFTMetaData, b: NFTMetaData) {
   if (a.attrString < b.attrString) {

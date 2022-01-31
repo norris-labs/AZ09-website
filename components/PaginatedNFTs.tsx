@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
+
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { NFTList } from "./NFTList";
-import { metadata } from "../utils/metadata";
+import ReactPaginate from "react-paginate";
+import { SearchBox } from "./SearchBox";
 import { TransactionStatus } from "@usedapp/core";
-import { SearchField } from "./SearchField";
-import { Button } from "@mui/material";
+import { metadata } from "../utils/metadata";
 
 type PaginatedNFTs = {
   sendMintTX: (id: number) => void;
@@ -17,7 +17,7 @@ type PaginatedNFTs = {
   cost: string | number;
 };
 
-export function PaginatedNFTs({
+function PaginatedNFTsComponent({
   itemsPerPage,
   sendMintTX,
   isNFTMinted,
@@ -27,6 +27,7 @@ export function PaginatedNFTs({
 }: PaginatedNFTs) {
   const [currentItems, setCurrentItems] = useState<null | NFTMetaData[]>(null);
   const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const [searchText, setSearchText] = useState<null | string>(null);
   const [searchResults, setSearchResults] = useState<null | NFTMetaData[]>(
@@ -34,15 +35,23 @@ export function PaginatedNFTs({
   );
 
   useEffect(() => {
-    // const itemsToPaginate = searchResults
     const endOffset = itemOffset + itemsPerPage;
-    setCurrentItems(metadata.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(metadata.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage]);
+
+    if (searchResults?.length) {
+      setCurrentItems(searchResults.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(searchResults.length / itemsPerPage));
+    } else {
+      setCurrentItems(metadata.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(metadata.length / itemsPerPage));
+    }
+  }, [itemOffset, itemsPerPage, searchResults?.length]);
 
   function search() {
     if (searchText === "" || searchText === null) {
-      console.log(currentItems);
+      setSearchResults(metadata);
+      pushWindowHash(0);
+      const newOffset = calcNewOffset(0, metadata);
+      setItemOffset(newOffset);
       return;
     }
 
@@ -50,21 +59,35 @@ export function PaginatedNFTs({
       return attrString.toLowerCase().includes(searchText.toLowerCase());
     });
 
+    const newOffset = calcNewOffset(0, searchResult);
+
     setSearchResults(searchResult);
-    console.log(searchResult);
+    pushWindowHash(0);
+  }
+
+  function calcNewOffset(pageNum: number, itemsToPaginate: NFTMetaData[]) {
+    return (pageNum * itemsPerPage) % itemsToPaginate.length;
   }
 
   function handlePageClick(event: any, scrollToTop: boolean = false) {
-    const newOffset = (event.selected * itemsPerPage) % metadata.length;
+    let newOffset;
+
+    if (searchResults?.length) {
+      newOffset = calcNewOffset(event.selected, searchResults);
+    } else {
+      newOffset = calcNewOffset(event.selected, metadata);
+    }
+
     setItemOffset(newOffset);
-    pushWindowHash(`#${event.selected}`);
+    pushWindowHash(event.selected);
+    setCurrentPage(event.selected);
 
     if (scrollToTop) {
       doScrollToTop();
     }
   }
 
-  function pushWindowHash(num: string): void {
+  function pushWindowHash(num: string | number): void {
     window.location.hash = `#${num}`;
   }
 
@@ -90,27 +113,22 @@ export function PaginatedNFTs({
             <Box
               sx={{
                 height: "100%",
+                fontSize: "1.25rem",
+                padding: "15px",
                 display: "flex",
                 alignItems: "center",
                 alignContent: "center",
               }}
             >
-              Page 1 / 10
+              Page {currentPage} / {pageCount}
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box sx={{ display: "flex" }}>
-              <SearchField
-                onChange={(e) => handleSearchChange(e.target.value)}
-                id="outlined-basic"
-                placeholder="Search.."
-                InputLabelProps={{ shrink: false }}
-                hiddenLabel
-                variant="outlined"
+              <SearchBox
+                handleSearchChange={handleSearchChange}
+                search={search}
               />
-              <Button onClick={search} sx={{ px: "30px" }} variant="contained">
-                Search
-              </Button>
             </Box>
           </Grid>
         </Grid>
@@ -150,3 +168,5 @@ export function PaginatedNFTs({
           className="pagination-container"
         /> */
 }
+
+export const PaginatedNFTs = React.memo(PaginatedNFTsComponent);

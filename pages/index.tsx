@@ -1,17 +1,16 @@
-import { SyntheticEvent, useState, useEffect } from 'react';
-import { useEthers} from '@usedapp/core'
-import { Typography, Link } from '@mui/material'
-import Head from 'next/head'
-import type { NextPage } from 'next'
-import { utils } from 'ethers';
+import { Container, Link, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+
 import Box from "@mui/material/Box";
-import Snackbar from "@mui/material/Snackbar";
-import { Navigation } from '../components/Navigation';
-import { Notice } from '../components/Notice';
 import { Content } from '../components/Content';
-import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
-import { useMint } from "../hooks/useMint";
+import Head from 'next/head';
+import { Navigation } from '../components/Navigation';
+import type { NextPage } from 'next';
 import { useCost } from "../hooks/useCost";
+import { useEthers } from '@usedapp/core';
+import { useMint } from "../hooks/useMint";
+import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
+import { utils } from 'ethers';
 
 const Home: NextPage = () => {
   const { activateBrowserWallet, account, deactivate, active, chainId } = useEthers()
@@ -38,7 +37,6 @@ const Home: NextPage = () => {
     setToastOpen(true);
   };
 
-
   function sendMintTX(id: number) {
     setMintTarget(id);
     mintNFT(id, {
@@ -58,9 +56,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Box sx={{
-        mx: 10
-      }}>
+      <Container fixed maxWidth="xl">
         <Navigation openNotice={openNotice} account={account} activateBrowserWallet={activateBrowserWallet} />
         <Box sx={{
           my: 10
@@ -69,21 +65,14 @@ const Home: NextPage = () => {
             AZ09 is a collection of 2,592 unique, programmatically generated monogram <Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link> on the <Link target="_blank" href="https://fantom.foundation/">Fantom network</Link>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.
           </Typography>
         </Box>
-        <Content cost={cost ? utils.formatEther(cost) : 0} mintTarget={mintTarget}txState={mintNFTState} sendMintTX={sendMintTX} isNFTMinted={isNFTMinted}/>
-
-
-        <Box sx={{
-          p: 10
-        }}>
-          mintedTokenIDs: {JSON.stringify(mintedTokenIDs)}
-          <br/>
-          {process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
-          <br/>
-          {JSON.stringify(mintNFTState)}
-          <br/>
-          Cost: {cost ? utils.formatEther(cost) : 0}
-        </Box>
-      </Box>
+        <Content
+          cost={cost ? utils.formatEther(cost) : 0}
+          mintTarget={mintTarget}
+          txState={mintNFTState}
+          sendMintTX={sendMintTX}
+          isNFTMinted={isNFTMinted}
+        />
+      </Container>
     </div>
   )
 }
