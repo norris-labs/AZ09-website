@@ -120,7 +120,7 @@ function PaginatedNFTsComponent({
                 alignContent: "center",
               }}
             >
-              Page {currentPage} / {pageCount}
+              Page — {currentPage} / {pageCount}
             </Box>
           </Grid>
           <Grid item xs={6}>

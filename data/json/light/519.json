@@ -1,10 +1,10 @@
 {
   "name": "AZ09 Light #519",
-  "description": "AZ09 is a collection of 1296 unique, programmatically generated monograms. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two flavors: dark and light.",
-  "image": "ipfs://QmZep6CUeQqWVWSZj1Fv3pNYATEVZuL9iH6zJM3Y2CpNFx/519.png",
-  "dna": "8e0fa846d84802e04d2462becb9594cf0e7fb8b9",
+  "description": "AZ09 is a collection of 2,592 unique, programmatically generated monogram NFTs on the Fantom network. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.",
+  "image": "https://gateway.pinata.cloud/ipfs/QmVTmWdnKqVeoZsbLoxmh4kTqfT9GSrYQe2nHB9haJsVKJ/519.png",
+  "dna": "ef76b6c9dfe588c2cf782bfe60e2d9f7996076c9",
   "edition": 519,
-  "date": 1642747042018,
+  "date": 1643076014167,
   "variation": "light",
   "attributes": [
     {
@@ -13,11 +13,11 @@
     },
     {
       "trait_type": "Left",
-      "value": "6"
+      "value": "8"
     },
     {
       "trait_type": "Right",
-      "value": "Y"
+      "value": "C"
     }
   ],
   "compiler": "HashLips Art Engine"

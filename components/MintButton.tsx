@@ -1,8 +1,8 @@
-import { Button } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { styled } from "@mui/system";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Button } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
+import { styled } from "@mui/system";
 import { TransactionStatus } from "@usedapp/core";
 
 export const CustomButton = styled(Button)`
@@ -77,7 +77,7 @@ export function MintButton({
   }
   return isNFTMinted(item.edition) ? (
     <CustomButtonSecondary
-      href={process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}
+      href={`${process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}/${item.edition}`}
       target="_blank"
       variant="contained"
       endIcon={<OpenInNewIcon />}
