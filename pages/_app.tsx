@@ -1,8 +1,8 @@
-import '../styles/globals.css'
-
-import { DAppProvider, Config, Fantom } from '@usedapp/core'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import type { AppProps } from 'next/app'
+import { Config, DAppProvider, Fantom } from '@usedapp/core';
+import type { AppProps } from 'next/app';
+import '../styles/globals.css';
+
 
 
 const config: Config = {

@@ -1,31 +1,47 @@
 import { Container, Link, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-
 import Box from "@mui/material/Box";
-import { Content } from '../components/Content';
-import Head from 'next/head';
-import { Navigation } from '../components/Navigation';
-import type { NextPage } from 'next';
-import { useCost } from "../hooks/useCost";
 import { useEthers } from '@usedapp/core';
+import { utils } from 'ethers';
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { Content } from '../components/Content';
+import { Navigation } from '../components/Navigation';
+import { Toast } from '../components/Toast';
+import { useCost } from "../hooks/useCost";
 import { useMint } from "../hooks/useMint";
 import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
-import { utils } from 'ethers';
+
 
 const Home: NextPage = () => {
   const { activateBrowserWallet, account, deactivate, active, chainId } = useEthers()
-
+  const [currentTab, setCurrentTab] = useState<number>(0)
   const cost: number = useCost()
   const mintedTokenIDs = useMintedTokenIDs()
-  const {state: mintNFTState, send: mintNFT} = useMint()
-  const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [noticeType, setNoticeType] = useState('');
+  const [currentEdition, setCurrentEdition] = useState('light');
   const [mintTarget, setMintTarget] = useState<null|number>(null);
+  const {state: mintNFTState, send: mintNFT} = useMint(currentEdition);
+  const {state: sudoMintNFTState, send: sudoMintNFT} = useMint(currentEdition);
+
+
+
+  useEffect(() => {
+    if (currentTab === 0) {
+      setCurrentEdition('light')
+    } else {
+      setCurrentEdition('dark')
+    }
+  }, [currentTab])
 
   useEffect(() => {
     const message = mintNFTState.errorMessage || mintNFTState.status;
+    const status = mintNFTState.status;
     setToastMessage(message)
-  }, [toastOpen])
+    setNoticeType(status)
+  }, [mintNFTState])
 
   useEffect(() => {
     if (mintNFTState.status === "None" || mintNFTState.status === "Exception") {
@@ -33,16 +49,20 @@ const Home: NextPage = () => {
     }
   }, [mintTarget])
 
-  function openNotice() {
-    setToastOpen(true);
-  };
-
   function sendMintTX(id: number) {
     setMintTarget(id);
     mintNFT(id, {
       value: cost
     });
   }
+
+  function sendSudoMintTX(id: number) {
+    setMintTarget(id);
+    sudoMintNFT(id, {
+      value: cost
+    });
+  }
+
 
   function isNFTMinted(tokenID: number) {
     return mintedTokenIDs.includes(tokenID)
@@ -57,7 +77,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Container fixed maxWidth="xl">
-        <Navigation openNotice={openNotice} account={account} activateBrowserWallet={activateBrowserWallet} />
+        <Navigation account={account} activateBrowserWallet={activateBrowserWallet} />
         <Box sx={{
           my: 10
         }}>
@@ -69,30 +89,24 @@ const Home: NextPage = () => {
           cost={cost ? utils.formatEther(cost) : 0}
           mintTarget={mintTarget}
           txState={mintNFTState}
+          sendSudoMintTX={sendSudoMintTX}
           sendMintTX={sendMintTX}
+          setCurrentTab={setCurrentTab}
+          currentTab={currentTab}
           isNFTMinted={isNFTMinted}
         />
+
+        {JSON.stringify(mintNFTState)}
+        {process.env.NEXT_PUBLIC_CHAIN_ID}
+
+        <Toast
+          message={toastMessage}
+          noticeType={noticeType}
+        />
+
       </Container>
     </div>
   )
 }
 
 export default Home
-
-
-
-  // function handleClose(event: SyntheticEvent | Event, reason?: string) {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-
-  //   setToastOpen(false);
-  // };
-
-      // <Snackbar
-      //     open={true}
-      //     autoHideDuration={6000}
-      //     onClose={handleClose}
-      //     message={toastMessage}
-      //     action={Notice}
-      //   /> 

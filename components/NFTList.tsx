@@ -1,28 +1,32 @@
-import Box from "@mui/material/Box";
 import { capitalize } from "@mui/material";
+import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
-import Image from "next/image";
 import { TransactionStatus } from "@usedapp/core";
+import Image from "next/image";
 import { MintButton } from "./MintButton";
 import { TocDisplay } from "./TocDisplay";
 
 type NFTListProps = {
   currentItems: NFTMetaData[] | null;
   sendMintTX: (id: number) => void;
+  sendSudoMintTX: (id: number) => void;
   isNFTMinted: (id: number) => boolean;
   txState: TransactionStatus;
   mintTarget: number | null;
+  currentTab: number;
   cost: string | number;
 };
 
 export function NFTList({
   currentItems,
   sendMintTX,
+  sendSudoMintTX,
   isNFTMinted,
   cost,
+  currentTab,
   mintTarget,
   txState,
 }: NFTListProps) {
@@ -38,22 +42,23 @@ export function NFTList({
         return (
           <Grid item xs={6} sm={4} md={4} lg={3} key={item.dna}>
             <Card className="nft-item">
-              <CardContent>
-                <CardMedia>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      position: "relative",
-                    }}
-                  >
-                    <Image
-                      src={`/images/light/${item.edition}.png`}
-                      alt="nft-image"
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                  </div>
+              <CardContent sx={{ borderRadius: 0 }}>
+                <CardMedia
+                  sx={{
+                    width: "100%",
+                    borderRadius: "4px",
+                    display: "flex",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Image
+                    src={`/images/${currentTab === 0 ? "light" : "dark"}/${
+                      item.edition
+                    }.png`}
+                    alt="nft-image"
+                    width={400}
+                    height={400}
+                  />
                 </CardMedia>
                 <Box className="monospaced" sx={{ my: 2 }}>
                   <span>
@@ -73,13 +78,25 @@ export function NFTList({
                     />
                   </span>
                 </Box>
-                <MintButton
-                  mintTarget={mintTarget}
-                  item={item}
-                  txState={txState}
-                  sendMintTX={sendMintTX}
-                  isNFTMinted={isNFTMinted}
-                />
+                {process.env.LOCAL ? (
+                  <MintButton
+                    mintTarget={mintTarget}
+                    item={item}
+                    txState={txState}
+                    sendMintTX={sendMintTX}
+                    sendSudoMintTX={sendSudoMintTX}
+                    isNFTMinted={isNFTMinted}
+                  />
+                ) : (
+                  <MintButton
+                    mintTarget={mintTarget}
+                    item={item}
+                    txState={txState}
+                    sendMintTX={sendMintTX}
+                    sendSudoMintTX={sendSudoMintTX}
+                    isNFTMinted={isNFTMinted}
+                  />
+                )}
               </CardContent>
             </Card>
           </Grid>

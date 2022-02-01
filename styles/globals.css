@@ -112,10 +112,6 @@ img {
   margin-right: 6px;
 }
 
-.nft-item img {
-  transform: scale(1.1);
-}
-
 .monospaced {
   font-family: "Inconsolata", monospace;
 }

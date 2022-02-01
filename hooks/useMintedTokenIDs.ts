@@ -1,14 +1,14 @@
-import contractABI from "../abi/contact-abi.json";
-import { ethers, BigNumber } from "ethers";
 import { useContractCall } from "@usedapp/core";
+import { BigNumber, ethers } from "ethers";
+import AZ09LightABI from "../abi/AZ09-light-abi.json";
 
-const simpleContractInterface = new ethers.utils.Interface(contractABI);
+const simpleContractInterface = new ethers.utils.Interface(AZ09LightABI);
 
 export function useMintedTokenIDs() {
   const [mintedTokenIDs]: Array<BigNumber>[] =
     useContractCall({
       abi: simpleContractInterface,
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string,
+      address: process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS as string,
       method: "getMintedTokenIDs",
       args: [],
     }) ?? [];

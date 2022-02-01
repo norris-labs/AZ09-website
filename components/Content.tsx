@@ -1,74 +1,51 @@
-import { Tab, TabContainer, TabList, TabPanel } from "./Tabs";
-
 import Box from "@mui/material/Box";
-import { PaginatedNFTs } from "./PaginatedNFTs";
 import { TransactionStatus } from "@usedapp/core";
-import { useState } from "react";
+import React from "react";
+import { PaginatedNFTs } from "./PaginatedNFTs";
+import { Tab, TabContainer, TabList, TabPanel } from "./Tabs";
 
 type ContentProps = {
   isNFTMinted: (id: number) => boolean;
   sendMintTX: (id: number) => void;
+  sendSudoMintTX: (id: number) => void;
+  setCurrentTab: (id: number) => void;
   txState: TransactionStatus;
   mintTarget: number | null;
+  currentTab: number;
   cost: string | number;
 };
 
 export function Content({
   isNFTMinted,
   sendMintTX,
+  sendSudoMintTX,
   cost,
   txState,
   mintTarget,
+  setCurrentTab,
+  currentTab,
 }: ContentProps) {
-  const [currentTab, setCurrentTab] = useState<number | string>(0);
-
   return (
     <TabContainer defaultValue={0}>
       <TabList>
         <Tab
           onChange={(_e, value) => {
-            setCurrentTab(value);
+            setCurrentTab(Number(value));
           }}
         >
-          <Box
-            sx={{
-              background: `${currentTab === 0 ? "black" : "white"}`,
-              color: `${currentTab === 0 ? "white" : "black"}`,
-              width: "1.5rem",
-              height: "1.5rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "100%",
-              fontSize: ".95rem",
-              marginRight: "5px",
-            }}
-          >
+          <TabChicklet tabNum={0} currentTab={currentTab}>
             1
-          </Box>{" "}
+          </TabChicklet>{" "}
           Light Edition
         </Tab>
         <Tab
           onChange={(_e, value) => {
-            setCurrentTab(value);
+            setCurrentTab(Number(value));
           }}
         >
-          <Box
-            sx={{
-              background: `${currentTab === 1 ? "black" : "white"}`,
-              color: `${currentTab === 1 ? "white" : "black"}`,
-              width: "1.5rem",
-              height: "1.5rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "100%",
-              fontSize: ".95rem",
-              marginRight: "5px",
-            }}
-          >
+          <TabChicklet tabNum={1} currentTab={currentTab}>
             2
-          </Box>
+          </TabChicklet>
           Dark Edition
         </Tab>
       </TabList>
@@ -76,15 +53,53 @@ export function Content({
       <TabPanel value={0}>
         <PaginatedNFTs
           cost={cost}
+          currentTab={currentTab}
           itemsPerPage={30}
           isNFTMinted={isNFTMinted}
           sendMintTX={sendMintTX}
+          sendSudoMintTX={sendSudoMintTX}
           txState={txState}
           mintTarget={mintTarget}
         />
       </TabPanel>
 
-      <TabPanel value={1}>Other One</TabPanel>
+      <TabPanel value={1}>
+        <PaginatedNFTs
+          cost={cost}
+          currentTab={currentTab}
+          itemsPerPage={30}
+          isNFTMinted={isNFTMinted}
+          sendMintTX={sendMintTX}
+          sendSudoMintTX={sendSudoMintTX}
+          txState={txState}
+          mintTarget={mintTarget}
+        />
+      </TabPanel>
     </TabContainer>
   );
 }
+
+const TabChicklet: React.FC<{ currentTab: number; tabNum: number }> = ({
+  children,
+  currentTab,
+  tabNum,
+}) => {
+  return (
+    <Box
+      sx={{
+        background: `${currentTab === tabNum ? "black" : "white"}`,
+        color: `${currentTab === tabNum ? "white" : "black"}`,
+        width: "1.5rem",
+        height: "1.5rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "100%",
+        fontSize: ".95rem",
+        marginRight: "5px",
+      }}
+    >
+      {children}
+    </Box>
+  );
+};

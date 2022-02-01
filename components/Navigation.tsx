@@ -1,9 +1,9 @@
-import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
-import truncateEthAddress from "truncate-eth-address";
+import Box from "@mui/material/Box";
 import Blockies from "react-blockies";
+import truncateEthAddress from "truncate-eth-address";
 
-function onErrorHandler(e) {
+function onErrorHandler(e: Error) {
   if (e.name === "UnsupportedChainIdError") {
     alert("Switch to Fantom Chain");
     return;
@@ -15,13 +15,19 @@ function onErrorHandler(e) {
 
 export function Navigation({
   account,
-  openNotice,
   activateBrowserWallet,
 }: {
   account?: string | null;
   activateBrowserWallet: () => void;
-  openNotice: () => void;
 }) {
+  async function connectWallet() {
+    try {
+      await activateBrowserWallet(undefined, true);
+    } catch (e) {
+      onErrorHandler(e);
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -50,7 +56,7 @@ export function Navigation({
       ) : (
         <div>
           <Button
-            onClick={() => activateBrowserWallet(onErrorHandler)}
+            onClick={connectWallet}
             sx={{
               background: "white",
               border: "none",

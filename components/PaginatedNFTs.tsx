@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { NFTList } from "./NFTList";
-import ReactPaginate from "react-paginate";
-import { SearchBox } from "./SearchBox";
 import { TransactionStatus } from "@usedapp/core";
-import { metadata } from "../utils/metadata";
+import React, { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
+import { metadata as metadataDark } from "../utils/metadata_dark";
+import { metadata as metadataLight } from "../utils/metadata_light";
+import { NFTList } from "./NFTList";
+import { SearchBox } from "./SearchBox";
 
 type PaginatedNFTs = {
   sendMintTX: (id: number) => void;
+  sendSudoMintTX: (id: number) => void;
   isNFTMinted: (id: number) => boolean;
   itemsPerPage: number;
+  currentTab: number;
   mintTarget: number | null;
   txState: TransactionStatus;
   cost: string | number;
@@ -19,7 +21,9 @@ type PaginatedNFTs = {
 
 function PaginatedNFTsComponent({
   itemsPerPage,
+  currentTab,
   sendMintTX,
+  sendSudoMintTX,
   isNFTMinted,
   mintTarget,
   cost,
@@ -28,11 +32,18 @@ function PaginatedNFTsComponent({
   const [currentItems, setCurrentItems] = useState<null | NFTMetaData[]>(null);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [currentPageDisplay, setCurrentPageDisplay] = useState(1);
   const [itemOffset, setItemOffset] = useState(0);
   const [searchText, setSearchText] = useState<null | string>(null);
   const [searchResults, setSearchResults] = useState<null | NFTMetaData[]>(
     null
   );
+
+  const nftCollection = [metadataLight, metadataDark];
+
+  useEffect(() => {
+    setCurrentPageDisplay(currentPage + 1);
+  }, [currentPage]);
 
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
@@ -41,21 +52,21 @@ function PaginatedNFTsComponent({
       setCurrentItems(searchResults.slice(itemOffset, endOffset));
       setPageCount(Math.ceil(searchResults.length / itemsPerPage));
     } else {
-      setCurrentItems(metadata.slice(itemOffset, endOffset));
-      setPageCount(Math.ceil(metadata.length / itemsPerPage));
+      setCurrentItems(nftCollection[currentTab].slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(nftCollection[currentTab].length / itemsPerPage));
     }
   }, [itemOffset, itemsPerPage, searchResults?.length]);
 
   function search() {
     if (searchText === "" || searchText === null) {
-      setSearchResults(metadata);
+      setSearchResults(nftCollection[currentTab]);
       pushWindowHash(0);
-      const newOffset = calcNewOffset(0, metadata);
+      const newOffset = calcNewOffset(0, nftCollection[currentTab]);
       setItemOffset(newOffset);
       return;
     }
 
-    const searchResult = metadata.filter(({ attrString }) => {
+    const searchResult = nftCollection[currentTab].filter(({ attrString }) => {
       return attrString.toLowerCase().includes(searchText.toLowerCase());
     });
 
@@ -75,7 +86,7 @@ function PaginatedNFTsComponent({
     if (searchResults?.length) {
       newOffset = calcNewOffset(event.selected, searchResults);
     } else {
-      newOffset = calcNewOffset(event.selected, metadata);
+      newOffset = calcNewOffset(event.selected, metadataLight);
     }
 
     setItemOffset(newOffset);
@@ -120,7 +131,7 @@ function PaginatedNFTsComponent({
                 alignContent: "center",
               }}
             >
-              Page — {currentPage} / {pageCount}
+              Page — {currentPageDisplay} / {pageCount}
             </Box>
           </Grid>
           <Grid item xs={6}>
@@ -135,10 +146,12 @@ function PaginatedNFTsComponent({
       </Box>
       <NFTList
         sendMintTX={sendMintTX}
+        sendSudoMintTX={sendSudoMintTX}
         isNFTMinted={isNFTMinted}
         cost={cost}
         currentItems={currentItems}
         mintTarget={mintTarget}
+        currentTab={currentTab}
         txState={txState}
       />
       <div className="pagination-wrapper">
@@ -154,19 +167,6 @@ function PaginatedNFTsComponent({
       </div>
     </>
   );
-}
-{
-  /* <ReactPaginate
-          breakLabel="..."
-          nextLabel="&rarr;"
-          marginPagesDisplayed={5}
-          onPageChange={(e) => handlePageClick(e, false)}
-          pageRangeDisplayed={5}
-          pageCount={pageCount}
-          previousLabel="&larr;"
-          pageLinkClassName="pagination-page-link"
-          className="pagination-container"
-        /> */
 }
 
 export const PaginatedNFTs = React.memo(PaginatedNFTsComponent);
