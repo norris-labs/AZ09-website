@@ -1,15 +1,17 @@
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import * as React from "react";
-import { useState } from "react";
+import * as React from 'react';
+
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { memo, useState } from 'react';
+
+import Snackbar from '@mui/material/Snackbar';
 
 const noticeTypeMap = {
-  Exception: "error",
-  Success: "success",
+  Exception: 'error',
+  Success: 'success',
 };
 
 const messageMap = {
-  "insufficient balance for transfer": true,
+  'insufficient balance for transfer': true,
   None: false,
 };
 
@@ -18,7 +20,7 @@ type ToastProps = {
   message: string;
 };
 
-export function Toast({ message, noticeType }: ToastProps) {
+function ToastComponent({ message, noticeType }: ToastProps) {
   const [toastOpen, setToastOpen] = useState(false);
   //@ts-ignore
   const alertType: AlertProps = noticeTypeMap[noticeType];
@@ -39,10 +41,10 @@ export function Toast({ message, noticeType }: ToastProps) {
       open={toastOpen}
       autoHideDuration={6000}
       onClose={() => {}}
-      message={"toastMessage"}
+      message={'toastMessage'}
       anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        vertical: 'top',
+        horizontal: 'right',
       }}
       action={<>HIIII</>}
     >
@@ -51,7 +53,7 @@ export function Toast({ message, noticeType }: ToastProps) {
         //@ts-ignore
         severity={alertType}
         sx={{
-          width: "100%",
+          width: '100%',
         }}
       >
         {message}
@@ -64,5 +66,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
 });
+
+export const Toast = memo(ToastComponent);

@@ -1,8 +1,10 @@
-import Box from "@mui/material/Box";
-import { TransactionStatus } from "@usedapp/core";
-import React from "react";
-import { PaginatedNFTs } from "./PaginatedNFTs";
-import { Tab, TabContainer, TabList, TabPanel } from "./Tabs";
+import { Tab, TabContainer, TabList, TabPanel } from './Tabs';
+
+import Box from '@mui/material/Box';
+import { PaginatedNFTs } from './PaginatedNFTs';
+import React from 'react';
+import { TransactionStatus } from '@usedapp/core';
+import { memo } from 'react';
 
 type ContentProps = {
   isNFTMinted: (id: number) => boolean;
@@ -15,7 +17,7 @@ type ContentProps = {
   cost: string | number;
 };
 
-export function Content({
+function ContentComponent({
   isNFTMinted,
   sendMintTX,
   sendSudoMintTX,
@@ -35,7 +37,7 @@ export function Content({
         >
           <TabChicklet tabNum={0} currentTab={currentTab}>
             1
-          </TabChicklet>{" "}
+          </TabChicklet>{' '}
           Light Edition
         </Tab>
         <Tab
@@ -87,19 +89,21 @@ const TabChicklet: React.FC<{ currentTab: number; tabNum: number }> = ({
   return (
     <Box
       sx={{
-        background: `${currentTab === tabNum ? "black" : "white"}`,
-        color: `${currentTab === tabNum ? "white" : "black"}`,
-        width: "1.5rem",
-        height: "1.5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "100%",
-        fontSize: ".95rem",
-        marginRight: "5px",
+        background: `${currentTab === tabNum ? 'black' : 'white'}`,
+        color: `${currentTab === tabNum ? 'white' : 'black'}`,
+        width: '1.5rem',
+        height: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '100%',
+        fontSize: '.95rem',
+        marginRight: '5px',
       }}
     >
       {children}
     </Box>
   );
 };
+
+export const Content = memo(ContentComponent);

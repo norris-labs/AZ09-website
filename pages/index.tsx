@@ -1,18 +1,19 @@
-import { Container, Link, Typography } from '@mui/material';
-import Box from "@mui/material/Box";
-import { useEthers } from '@usedapp/core';
-import { utils } from 'ethers';
-import type { NextPage } from 'next';
-import Head from 'next/head';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+
+import { Container, Link, Typography } from '@mui/material';
+import { memo, useCallback, useEffect, useState } from 'react';
+
+import Box from "@mui/material/Box";
 import { Content } from '../components/Content';
+import Head from 'next/head';
 import { Navigation } from '../components/Navigation';
+import type { NextPage } from 'next';
 import { Toast } from '../components/Toast';
 import { useCost } from "../hooks/useCost";
+import { useEthers } from '@usedapp/core';
 import { useMint } from "../hooks/useMint";
 import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
-
+import { utils } from 'ethers';
 
 const Home: NextPage = () => {
   const { activateBrowserWallet, account, deactivate, active, chainId } = useEthers()
@@ -64,9 +65,10 @@ const Home: NextPage = () => {
   }
 
 
-  function isNFTMinted(tokenID: number) {
+  const isNFTMinted = useCallback((tokenID: number) => {
     return mintedTokenIDs.includes(tokenID)
-  }
+  }, [mintedTokenIDs])
+
 
   return (
     <div>
@@ -109,4 +111,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default memo(Home)

@@ -1,12 +1,13 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { TransactionStatus } from "@usedapp/core";
-import React, { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { metadata as metadataDark } from "../utils/metadata_dark";
-import { metadata as metadataLight } from "../utils/metadata_light";
-import { NFTList } from "./NFTList";
-import { SearchBox } from "./SearchBox";
+import React, { memo, useCallback, useEffect, useState } from 'react';
+
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { NFTList } from './NFTList';
+import ReactPaginate from 'react-paginate';
+import { SearchBox } from './SearchBox';
+import { TransactionStatus } from '@usedapp/core';
+import { metadata as metadataDark } from '../utils/metadata_dark';
+import { metadata as metadataLight } from '../utils/metadata_light';
 
 type PaginatedNFTs = {
   sendMintTX: (id: number) => void;
@@ -58,7 +59,7 @@ function PaginatedNFTsComponent({
   }, [itemOffset, itemsPerPage, searchResults?.length]);
 
   function search() {
-    if (searchText === "" || searchText === null) {
+    if (searchText === '' || searchText === null) {
       setSearchResults(nftCollection[currentTab]);
       pushWindowHash(0);
       const newOffset = calcNewOffset(0, nftCollection[currentTab]);
@@ -103,7 +104,7 @@ function PaginatedNFTsComponent({
   }
 
   function doScrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function handleSearchChange(_searchText: string): void {
@@ -115,27 +116,27 @@ function PaginatedNFTsComponent({
       <Box
         sx={{
           py: 4,
-          display: "flex",
-          justifyContent: "space-between",
+          display: 'flex',
+          justifyContent: 'space-between',
         }}
       >
         <Grid container>
           <Grid item xs={6}>
             <Box
               sx={{
-                height: "100%",
-                fontSize: "1.25rem",
-                padding: "15px",
-                display: "flex",
-                alignItems: "center",
-                alignContent: "center",
+                height: '100%',
+                fontSize: '1.25rem',
+                padding: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                alignContent: 'center',
               }}
             >
               Page — {currentPageDisplay} / {pageCount}
             </Box>
           </Grid>
           <Grid item xs={6}>
-            <Box sx={{ display: "flex" }}>
+            <Box sx={{ display: 'flex' }}>
               <SearchBox
                 handleSearchChange={handleSearchChange}
                 search={search}
@@ -154,19 +155,19 @@ function PaginatedNFTsComponent({
         currentTab={currentTab}
         txState={txState}
       />
-      <div className="pagination-wrapper">
+      <div className='pagination-wrapper'>
         <ReactPaginate
-          breakLabel="..."
-          nextLabel="&rarr;"
+          breakLabel='...'
+          nextLabel='&rarr;'
           onPageChange={(e) => handlePageClick(e, true)}
           pageCount={pageCount}
-          previousLabel="&larr;"
-          pageLinkClassName="pagination-page-link"
-          className="pagination-container"
+          previousLabel='&larr;'
+          pageLinkClassName='pagination-page-link'
+          className='pagination-container'
         />
       </div>
     </>
   );
 }
 
-export const PaginatedNFTs = React.memo(PaginatedNFTsComponent);
+export const PaginatedNFTs = memo(PaginatedNFTsComponent);

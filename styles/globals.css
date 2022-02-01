@@ -85,7 +85,7 @@ img {
 
 .selected .pagination-page-link,
 .selected .pagination-page-link:hover {
-  background: red;
+  background: #ff3c00;
   color: black;
 }
 
