@@ -12,20 +12,19 @@ const SearchButtonComponent = styled(Button)`
 export const SearchButton = memo(SearchButtonComponent);
 
 type SearchBoxProps = {
-  handleSearchChange: (searchStr: string) => void;
-  search: () => void;
+  search: (e: any) => void;
 };
 
 function SearchBoxComponent({ handleSearchChange, search }: SearchBoxProps) {
   return (
     <>
       <SearchField
-        onChange={(e) => handleSearchChange(e.target.value)}
         id='outlined-basic'
         placeholder='Search..'
         InputLabelProps={{ shrink: false }}
         hiddenLabel
         variant='outlined'
+        onChange={search}
         InputProps={{
           startAdornment: (
             <InputAdornment position='start'>
@@ -39,9 +38,6 @@ function SearchBoxComponent({ handleSearchChange, search }: SearchBoxProps) {
           ),
         }}
       />
-      <SearchButton onClick={search} sx={{ px: '30px' }} variant='contained'>
-        Search
-      </SearchButton>
     </>
   );
 }

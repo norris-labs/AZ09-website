@@ -35,7 +35,7 @@ function PaginatedNFTsComponent({
   const [currentPage, setCurrentPage] = useState(0);
   const [currentPageDisplay, setCurrentPageDisplay] = useState(1);
   const [itemOffset, setItemOffset] = useState(0);
-  const [searchText, setSearchText] = useState<null | string>(null);
+  // const [searchText, setSearchText] = useState<null | string>(null);/
   const [searchResults, setSearchResults] = useState<null | NFTMetaData[]>(
     null
   );
@@ -58,7 +58,8 @@ function PaginatedNFTsComponent({
     }
   }, [itemOffset, itemsPerPage, searchResults?.length]);
 
-  function search() {
+  function search(e) {
+    const searchText = e.target.value;
     if (searchText === '' || searchText === null) {
       setSearchResults(nftCollection[currentTab]);
       pushWindowHash(0);
@@ -107,10 +108,6 @@ function PaginatedNFTsComponent({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function handleSearchChange(_searchText: string): void {
-    setSearchText(_searchText);
-  }
-
   return (
     <>
       <Box
@@ -137,10 +134,7 @@ function PaginatedNFTsComponent({
           </Grid>
           <Grid item xs={6}>
             <Box sx={{ display: 'flex' }}>
-              <SearchBox
-                handleSearchChange={handleSearchChange}
-                search={search}
-              />
+              <SearchBox search={search} />
             </Box>
           </Grid>
         </Grid>

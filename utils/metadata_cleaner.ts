@@ -8,9 +8,9 @@ function sortABC(a: NFTMetaData, b: NFTMetaData) {
   return 0;
 }
 
-function combineAttr(data: Omit<NFTMetaData, "attrString">) {
+function combineAttr(data: Omit<NFTMetaData, 'attrString'>) {
   const attrString = [data.attributes[1].value, data.attributes[2].value].join(
-    ""
+    ''
   );
 
   return { ...data, attrString };
@@ -23,7 +23,7 @@ function isNumber(item: any) {
 function findStringStart(items: NFTMetaData[]) {
   for (let i = 0; i < items.length; i++) {
     let foundLetterStart = false;
-    const [left, right] = items[i].attrString.split("");
+    const [left, right] = items[i].attrString.split('');
     if (isNumber(left) || isNumber(right)) {
       continue;
     } else if (foundLetterStart === false) {
@@ -40,7 +40,7 @@ function lettersFirst(items: NFTMetaData[]) {
   return [...letters.sort(), ...numbers.sort()];
 }
 
-export function MetaDataCleaner(_metadata: Omit<NFTMetaData, "attrString">[]) {
+export function MetaDataCleaner(_metadata: Omit<NFTMetaData, 'attrString'>[]) {
   const metadataSorted: NFTMetaData[] = _metadata
     .map(combineAttr)
     .sort(sortABC);

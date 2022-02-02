@@ -1,11 +1,11 @@
-import { Button } from "@mui/material";
-import Box from "@mui/material/Box";
-import Blockies from "react-blockies";
-import truncateEthAddress from "truncate-eth-address";
+import Blockies from 'react-blockies';
+import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
+import truncateEthAddress from 'truncate-eth-address';
 
 function onErrorHandler(e: Error) {
-  if (e.name === "UnsupportedChainIdError") {
-    alert("Switch to Fantom Chain");
+  if (e.name === 'UnsupportedChainIdError') {
+    alert('Switch to Fantom Chain');
     return;
   } else {
     alert(e);
@@ -32,24 +32,24 @@ export function Navigation({
     <Box
       sx={{
         mt: 5,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-end",
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
       }}
     >
       {account ? (
         <div>
           <Button
             sx={{
-              background: "white",
-              border: "none",
-              color: "black",
-              "&:hover": {
-                background: "white",
+              background: 'white',
+              border: 'none',
+              color: 'black',
+              '&:hover': {
+                background: 'white',
               },
             }}
           >
-            <Blockies className="blockie" seed={account} />
+            <Blockies className='blockie' seed={account} />
             {truncateEthAddress(account)}
           </Button>
         </div>
@@ -58,11 +58,11 @@ export function Navigation({
           <Button
             onClick={connectWallet}
             sx={{
-              background: "white",
-              border: "none",
-              color: "black",
-              "&:hover": {
-                background: "white",
+              background: 'white',
+              border: 'none',
+              color: 'black',
+              '&:hover': {
+                background: 'white',
               },
             }}
           >
