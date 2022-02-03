@@ -1,62 +1,66 @@
-import * as React from 'react';
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import { TransactionState } from "@usedapp/core";
+import * as React from "react";
+import { memo } from "react";
 
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { memo, useState } from 'react';
+export enum ToastLevels {
+  Exception = "error",
+  Success = "success",
+}
 
-import Snackbar from '@mui/material/Snackbar';
-
-const noticeTypeMap = {
-  Exception: 'error',
-  Success: 'success',
-};
-
-const messageMap = {
-  'insufficient balance for transfer': true,
-  None: false,
+export type ToastState = {
+  msg: string;
+  level: TransactionState;
 };
 
 type ToastProps = {
-  noticeType: string;
-  message: string;
+  toastState: ToastState;
+  setToastState: (state: ToastState) => void;
 };
 
-function ToastComponent({ message, noticeType }: ToastProps) {
-  const [toastOpen, setToastOpen] = useState(false);
+function ToastComponent({ toastState, setToastState }: ToastProps) {
+  if (!toastState) return null;
+  if ("msg" in toastState) return null;
+  if ("level" in toastState) return null;
+  // const [toastOpen, setToastOpen] = useState(false);
   //@ts-ignore
-  const alertType: AlertProps = noticeTypeMap[noticeType];
+  // const alertType: AlertProps = toastLeves[noticeType];
 
-  React.useEffect(() => {
-    //@ts-ignore
-    if (messageMap[message]) {
-      setToastOpen(true);
-    }
-  }, [message]);
+  // React.useEffect(() => {
+  //   //@ts-ignore
+  //   setToastOpen(true);
+  //   // if (messageMap[message]) {
+  //   // }
+  // }, [message]);
 
-  function closeToast() {
-    setToastOpen(false);
-  }
+  // function closeToast() {
+  //   setToastOpen(false);
+  // }
 
   return (
     <Snackbar
-      open={toastOpen}
+      open={toastState.msg} //toastState
       autoHideDuration={6000}
-      onClose={() => {}}
-      message={'toastMessage'}
+      onClose={() => setToastState(null)}
+      message={"toastMessage"}
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: "top",
+        horizontal: "right",
       }}
-      action={<>HIIII</>}
     >
+      {/* toastState.level */}
       <Alert
-        onClose={closeToast}
+        onClose={() => setToastState(null)}
         //@ts-ignore
-        severity={alertType}
+        severity={toastState.level}
         sx={{
-          width: '100%',
+          width: "100%",
+          fontSize: "1.1rem",
         }}
       >
-        {message}
+        {/* {mintTxState.status} */}
+        {JSON.stringify(toastState)}
       </Alert>
     </Snackbar>
   );
@@ -66,7 +70,13 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {
-  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 export const Toast = memo(ToastComponent);
+
+// const messageMap = {
+//   "insufficient balance for transfer": true,
+//   None: false,
+//   "Connect wallet first before minting": true,
+// };

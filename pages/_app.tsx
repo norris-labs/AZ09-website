@@ -11,7 +11,7 @@ const config: Config = {
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#ff3c00',
+      main: '#FC542B',
     },
   }
 });

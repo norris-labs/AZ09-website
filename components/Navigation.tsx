@@ -1,30 +1,30 @@
-import Blockies from 'react-blockies';
-import Box from '@mui/material/Box';
-import { Button } from '@mui/material';
-import truncateEthAddress from 'truncate-eth-address';
+import { Button } from "@mui/material";
+import Box from "@mui/material/Box";
+import Blockies from "react-blockies";
+import truncateEthAddress from "truncate-eth-address";
+import { ToastState } from "./Toast";
 
-function onErrorHandler(e: Error) {
-  if (e.name === 'UnsupportedChainIdError') {
-    alert('Switch to Fantom Chain');
-    return;
-  } else {
-    alert(e);
-    return;
-  }
-}
+type NavigationProps = {
+  account?: string | null;
+  activateBrowserWallet: () => void;
+  toastState: ToastState;
+  setToastState: (state: ToastState) => void;
+};
 
 export function Navigation({
   account,
+  toastState,
+  setToastState,
   activateBrowserWallet,
-}: {
-  account?: string | null;
-  activateBrowserWallet: () => void;
-}) {
+}: NavigationProps) {
   async function connectWallet() {
     try {
-      await activateBrowserWallet(undefined, true);
+      await activateBrowserWallet();
     } catch (e) {
-      onErrorHandler(e);
+      if ("message" in e) {
+        setToastState(e.message);
+      }
+      alert(JSON.stringify(e));
     }
   }
 
@@ -32,24 +32,26 @@ export function Navigation({
     <Box
       sx={{
         mt: 5,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
       }}
     >
       {account ? (
         <div>
           <Button
             sx={{
-              background: 'white',
-              border: 'none',
-              color: 'black',
-              '&:hover': {
-                background: 'white',
+              background: "#333232",
+              border: "none",
+              padding: "10px 15px",
+              fontSize: "1rem",
+              color: "white",
+              "&:hover": {
+                background: "#555555",
               },
             }}
           >
-            <Blockies className='blockie' seed={account} />
+            <Blockies size={6} className="blockie" seed={account} />
             {truncateEthAddress(account)}
           </Button>
         </div>
@@ -58,11 +60,13 @@ export function Navigation({
           <Button
             onClick={connectWallet}
             sx={{
-              background: 'white',
-              border: 'none',
-              color: 'black',
-              '&:hover': {
-                background: 'white',
+              background: "#333232",
+              border: "none",
+              padding: "10px 15px",
+              fontSize: "1rem",
+              color: "white",
+              "&:hover": {
+                background: "#555555",
               },
             }}
           >

@@ -1,6 +1,6 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button } from "@mui/material";
+import { Button, Link } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/system";
 import { TransactionStatus } from "@usedapp/core";
@@ -8,12 +8,12 @@ import { TransactionStatus } from "@usedapp/core";
 export function MintButton({
   item,
   txState,
-  sendMintTX,
+  setActiveMintId,
   isNFTMinted,
   sendSudoMintTX,
-  mintTarget,
+  activeMintId,
 }: MintButtonProps) {
-  if (txState?.status === "PendingSignature" && mintTarget === item.edition) {
+  if (txState?.status === "PendingSignature" && activeMintId === item.edition) {
     return (
       <CustomLoadingButton
         loading
@@ -43,7 +43,7 @@ export function MintButton({
       onClick={() => {
         process.env.NEXT_PUBLIC_USE_SUDO_MINT
           ? sendSudoMintTX(item.edition)
-          : sendMintTX(item.edition);
+          : setActiveMintId(item.edition);
       }}
     >
       {process.env.NEXT_PUBLIC_USE_SUDO_MINT ? "Sudo Mint" : "Mint"}
@@ -54,15 +54,16 @@ export function MintButton({
 type MintButtonProps = {
   txState: TransactionStatus;
   item: NFTMetaData;
-  sendMintTX: (id: number) => void;
+  setActiveMintId: (id: number) => void;
   sendSudoMintTX: (id: number) => void;
-  mintTarget: number | null;
+  activeMintId: number | null;
   isNFTMinted: (id: number) => boolean;
 };
 
 export const CustomButton = styled(Button)`
   width: 100%;
   box-shadow: none;
+  border-radius: 50px;
   font-size: 1.25rem;
   font-weight: bold;
   padding: 6px;
@@ -77,7 +78,7 @@ export const CustomButton = styled(Button)`
   }
 `;
 
-export const CustomButtonSecondary = styled(Button)`
+export const CustomButtonSecondary = styled(Link)`
   width: 100%;
   box-shadow: none;
   padding: 12px;

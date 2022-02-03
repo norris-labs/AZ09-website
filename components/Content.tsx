@@ -1,30 +1,30 @@
-import { Tab, TabContainer, TabList, TabPanel } from './Tabs';
-
-import Box from '@mui/material/Box';
-import { PaginatedNFTs } from './PaginatedNFTs';
-import React from 'react';
-import { TransactionStatus } from '@usedapp/core';
-import { memo } from 'react';
+import Box from "@mui/material/Box";
+import { TransactionStatus } from "@usedapp/core";
+import React, { memo } from "react";
+import { PaginatedNFTs } from "./PaginatedNFTs";
+import { Tab, TabContainer, TabList, TabPanel } from "./Tabs";
 
 type ContentProps = {
+  activeMintId: number | null;
+  cost: string | number;
+  currentEdition: string;
+  currentTab: number;
   isNFTMinted: (id: number) => boolean;
-  sendMintTX: (id: number) => void;
+  setActiveMintId: (id: number) => void;
   sendSudoMintTX: (id: number) => void;
   setCurrentTab: (id: number) => void;
   txState: TransactionStatus;
-  mintTarget: number | null;
-  currentTab: number;
-  cost: string | number;
 };
 
 function ContentComponent({
   isNFTMinted,
-  sendMintTX,
+  setActiveMintId,
   sendSudoMintTX,
   cost,
   txState,
-  mintTarget,
+  activeMintId,
   setCurrentTab,
+  currentEdition,
   currentTab,
 }: ContentProps) {
   return (
@@ -37,7 +37,7 @@ function ContentComponent({
         >
           <TabChicklet tabNum={0} currentTab={currentTab}>
             1
-          </TabChicklet>{' '}
+          </TabChicklet>{" "}
           Light Edition
         </Tab>
         <Tab
@@ -55,13 +55,14 @@ function ContentComponent({
       <TabPanel value={0}>
         <PaginatedNFTs
           cost={cost}
+          currentEdition={currentEdition}
           currentTab={currentTab}
           itemsPerPage={30}
           isNFTMinted={isNFTMinted}
-          sendMintTX={sendMintTX}
+          setActiveMintId={setActiveMintId}
           sendSudoMintTX={sendSudoMintTX}
           txState={txState}
-          mintTarget={mintTarget}
+          activeMintId={activeMintId}
         />
       </TabPanel>
 
@@ -69,12 +70,13 @@ function ContentComponent({
         <PaginatedNFTs
           cost={cost}
           currentTab={currentTab}
+          currentEdition={currentEdition}
           itemsPerPage={30}
           isNFTMinted={isNFTMinted}
-          sendMintTX={sendMintTX}
+          setActiveMintId={setActiveMintId}
           sendSudoMintTX={sendSudoMintTX}
           txState={txState}
-          mintTarget={mintTarget}
+          activeMintId={activeMintId}
         />
       </TabPanel>
     </TabContainer>
@@ -89,16 +91,16 @@ const TabChicklet: React.FC<{ currentTab: number; tabNum: number }> = ({
   return (
     <Box
       sx={{
-        background: `${currentTab === tabNum ? 'black' : 'white'}`,
-        color: `${currentTab === tabNum ? 'white' : 'black'}`,
-        width: '1.5rem',
-        height: '1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '100%',
-        fontSize: '.95rem',
-        marginRight: '5px',
+        background: `${currentTab === tabNum ? "black" : "white"}`,
+        color: `${currentTab === tabNum ? "white" : "black"}`,
+        width: "1.5rem",
+        height: "1.5rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "100%",
+        fontSize: ".95rem",
+        marginRight: "5px",
       }}
     >
       {children}

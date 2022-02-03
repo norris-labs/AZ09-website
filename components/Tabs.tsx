@@ -1,10 +1,9 @@
-import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
-
-import TabPanelUnstyled from '@mui/base/TabPanelUnstyled';
-import TabsListUnstyled from '@mui/base/TabsListUnstyled';
-import TabsUnstyled from '@mui/base/TabsUnstyled';
-import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
-import { styled } from '@mui/system';
+import { buttonUnstyledClasses } from "@mui/base/ButtonUnstyled";
+import TabPanelUnstyled from "@mui/base/TabPanelUnstyled";
+import TabsListUnstyled from "@mui/base/TabsListUnstyled";
+import TabsUnstyled from "@mui/base/TabsUnstyled";
+import TabUnstyled, { tabUnstyledClasses } from "@mui/base/TabUnstyled";
+import { styled } from "@mui/system";
 
 export const TabContainer = TabsUnstyled;
 
@@ -19,15 +18,16 @@ export const Tab = styled(TabUnstyled)`
   font-weight: bold;
   background-color: transparent;
   width: 100%;
+  border-radius: 50px;
   padding: 20px;
   border: none;
   display: flex;
   justify-content: center;
   outline: none;
 
-  &:hover {
+  /* &:hover {
     background-color: #555555;
-  }
+  } */
 
   &:focus {
     color: #fff;
@@ -55,10 +55,10 @@ export const TabPanel = styled(TabPanelUnstyled)`
 export const TabList = styled(TabsListUnstyled)`
   min-width: 320px;
   background-color: #333232;
+  border-radius: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   align-content: space-between;
-  border-radius: 5px;
   overflow: hidden;
 `;

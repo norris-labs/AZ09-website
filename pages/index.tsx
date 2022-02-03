@@ -1,74 +1,123 @@
-import * as React from 'react';
-
 import { Container, Link, Typography } from '@mui/material';
-import { memo, useCallback, useEffect, useState } from 'react';
-
 import Box from "@mui/material/Box";
-import { Content } from '../components/Content';
-import Head from 'next/head';
-import { Navigation } from '../components/Navigation';
-import type { NextPage } from 'next';
-import { Toast } from '../components/Toast';
-import { useCost } from "../hooks/useCost";
 import { useEthers } from '@usedapp/core';
+import { utils } from 'ethers';
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import * as React from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
+import { Content } from '../components/Content';
+import { Navigation } from '../components/Navigation';
+import { Toast, ToastLevels } from '../components/Toast';
+import { useCost } from "../hooks/useCost";
 import { useMint } from "../hooks/useMint";
 import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
-import { utils } from 'ethers';
+
+
+enum Copy {
+  connectWallet = 'Connect wallet first before minting',
+}
+
+enum Edition {
+  light = 'light',
+  dark = 'dark'
+}
 
 const Home: NextPage = () => {
-  const { activateBrowserWallet, account, deactivate, active, chainId } = useEthers()
+  const { activateBrowserWallet, account } = useEthers()
   const [currentTab, setCurrentTab] = useState<number>(0)
   const cost: number = useCost()
   const mintedTokenIDs = useMintedTokenIDs()
-  const [toastMessage, setToastMessage] = useState('');
-  const [noticeType, setNoticeType] = useState('');
+  const [toastState, setToastState] = useState<{msg: string, level: ToastLevels}|null>(null);
   const [currentEdition, setCurrentEdition] = useState('light');
-  const [mintTarget, setMintTarget] = useState<null|number>(null);
-  const {state: mintNFTState, send: mintNFT} = useMint(currentEdition);
-  const {state: sudoMintNFTState, send: sudoMintNFT} = useMint(currentEdition);
-
-
+  const [activeMintId, setActiveMintId] = useState<null|number>(null);
+  const {state: mintTxState, send: sendMintTx} = useMint(currentEdition);
+  const {state: sudoMintTxState, send: sudoMintTx} = useMint(currentEdition);
 
   useEffect(() => {
+    let _currentEdition;
+
     if (currentTab === 0) {
-      setCurrentEdition('light')
+      _currentEdition = Edition.light
     } else {
-      setCurrentEdition('dark')
+      _currentEdition = Edition.dark
     }
+
+    setCurrentEdition(_currentEdition)
   }, [currentTab])
 
   useEffect(() => {
-    const message = mintNFTState.errorMessage || mintNFTState.status;
-    const status = mintNFTState.status;
-    setToastMessage(message)
-    setNoticeType(status)
-  }, [mintNFTState])
+    const message = mintTxState.errorMessage || mintTxState.status;
+    const level = mintTxState.status;
+    if (!message && !level) return;
+
+    const toastArgs: ToastLevels = {
+      msg: message,
+      level
+    }
+
+    setToastState(toastArgs)
+  }, [mintTxState.status])
 
   useEffect(() => {
-    if (mintNFTState.status === "None" || mintNFTState.status === "Exception") {
-      setMintTarget(null);
+    if (mintTxState.status === "None" || mintTxState.status === "Exception") {
+      setActiveMintId(null);
     }
-  }, [mintTarget])
+  }, [activeMintId])
 
-  function sendMintTX(id: number) {
-    setMintTarget(id);
-    mintNFT(id, {
-      value: cost
-    });
-  }
+  useEffect(() => {
+    if (!activeMintId) return;
+    handleNFTMint();
+  }, [activeMintId])
 
-  function sendSudoMintTX(id: number) {
-    setMintTarget(id);
-    sudoMintNFT(id, {
-      value: cost
-    });
-  }
+  const handleWalletDisconnected = useCallback(() => {
+    const toastArgs = {
+      msg: Copy.connectWallet,
+      level: ToastLevels.Exception
+    }
+    setToastState(toastArgs);
+    alert(JSON.stringify(toastArgs));
+  }, [])
+
+  const handleMintError = useCallback(() => {
+    if (!toastState) return;
+    setToastState(toastState);
+    alert(JSON.stringify(toastState.msg));
+  }, [toastState])
+
+  const handleNFTMint = useCallback(() => {
+    if (!account) {
+      handleWalletDisconnected();
+    }
+
+    try {
+      sendMintTx(activeMintId, {
+        value: cost
+      });
+    } catch(e) {
+      handleMintError()
+    }
+  }, [activeMintId])
+
+
+  const sendSudoMintTX = useCallback(() => {
+    if (!account) {
+      handleWalletDisconnected();
+    }
+
+    try {
+      sudoMintTx(activeMintId, {
+        value: cost
+      });
+    } catch(e) {
+
+    }
+  }, [activeMintId])
 
 
   const isNFTMinted = useCallback((tokenID: number) => {
-    return mintedTokenIDs.includes(tokenID)
+    return mintedTokenIDs.includes(tokenID);
   }, [mintedTokenIDs])
-
 
   return (
     <div>
@@ -79,32 +128,44 @@ const Home: NextPage = () => {
       </Head>
 
       <Container fixed maxWidth="xl">
-        <Navigation account={account} activateBrowserWallet={activateBrowserWallet} />
+        <Navigation
+          account={account}
+          activateBrowserWallet={activateBrowserWallet}
+          toastState={toastState}
+          setToastState={setToastState}
+        />
         <Box sx={{
           my: 10
         }}>
-          <Typography variant="h3" component="h1">
-            AZ09 is a collection of 2,592 unique, programmatically generated monogram <Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link> on the <Link target="_blank" href="https://fantom.foundation/">Fantom network</Link>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ lineHeight: '2.5rem'}}
+          >
+            AZ09 is a collection of 2,592 unique, programmatically generated monogram <b><Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link></b> on the <b><Link target="_blank" href="https://fantom.foundation/">Fantom network</Link></b>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.
           </Typography>
         </Box>
         <Content
+          activeMintId={activeMintId}
           cost={cost ? utils.formatEther(cost) : 0}
-          mintTarget={mintTarget}
-          txState={mintNFTState}
-          sendSudoMintTX={sendSudoMintTX}
-          sendMintTX={sendMintTX}
-          setCurrentTab={setCurrentTab}
+          currentEdition={currentEdition}
           currentTab={currentTab}
           isNFTMinted={isNFTMinted}
+          sendSudoMintTX={sendSudoMintTX}
+          setActiveMintId={setActiveMintId}
+          setCurrentTab={setCurrentTab}
+          txState={mintTxState}
         />
 
-        {JSON.stringify(mintNFTState)}
+        {JSON.stringify(mintTxState)}
         {process.env.NEXT_PUBLIC_CHAIN_ID}
 
-        <Toast
-          message={toastMessage}
-          noticeType={noticeType}
-        />
+        {toastState &&
+          <Toast
+            toastState={toastState}
+            setToastState={setToastState}
+          />
+        }
 
       </Container>
     </div>

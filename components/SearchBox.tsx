@@ -1,9 +1,9 @@
-import { Button } from '@mui/material';
-import InputAdornment from '@mui/material/InputAdornment';
-import { SearchField } from './SearchField';
-import SearchIcon from '@mui/icons-material/Search';
-import { memo } from 'react';
-import { styled } from '@mui/system';
+import SearchIcon from "@mui/icons-material/Search";
+import { Button } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
+import { styled } from "@mui/system";
+import { memo } from "react";
+import { SearchField } from "./SearchField";
 
 const SearchButtonComponent = styled(Button)`
   background: #444444;
@@ -12,26 +12,30 @@ const SearchButtonComponent = styled(Button)`
 export const SearchButton = memo(SearchButtonComponent);
 
 type SearchBoxProps = {
-  search: (e: any) => void;
+  onChange: (searchText: string) => void;
 };
 
-function SearchBoxComponent({ handleSearchChange, search }: SearchBoxProps) {
+function SearchBoxComponent({ onChange }: SearchBoxProps) {
   return (
     <>
       <SearchField
-        id='outlined-basic'
-        placeholder='Search..'
+        id="outlined-basic"
+        placeholder="Search.."
         InputLabelProps={{ shrink: false }}
         hiddenLabel
-        variant='outlined'
-        onChange={search}
+        variant="outlined"
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete="off"
+        inputProps={{
+          maxLength: 2,
+        }}
         InputProps={{
           startAdornment: (
-            <InputAdornment position='start'>
+            <InputAdornment position="start">
               <SearchIcon
                 sx={{
-                  fontSize: '1.75rem',
-                  fill: 'hsla(0, 0%, 100%, 0.35)',
+                  fontSize: "1.75rem",
+                  fill: "hsla(0, 0%, 100%, 0.35)",
                 }}
               />
             </InputAdornment>
