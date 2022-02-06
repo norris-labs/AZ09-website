@@ -28,6 +28,12 @@ function calcNewOffset(
   return (pageNum * itemsPerPage) % itemsToPaginate.length;
 }
 
+let SearchWorker: Worker;
+
+if (process.browser) {
+  SearchWorker = new Worker(new URL("../worker/searcher.js", import.meta.url));
+}
+
 function PaginatedNFTsComponent({
   cost,
   isNFTMinted,
@@ -39,16 +45,14 @@ function PaginatedNFTsComponent({
 }: PaginatedNFTsProps) {
   const [searchResults, setSearchResults] = useState<[] | NFTMetaData[]>([]);
   const [pageResults, setPageResults] = useState<[] | NFTMetaData[]>([]);
+  const [runningSearch, setRunningSearch] = useState(false);
 
   // ------------ number of total pages ------------ //
   const [pageCount, setPageCount] = useState(0);
   const [currentPageNum, setCurrentPageNum] = useState(0);
   const [currentPageNumDisplay, setCurrentPageNumDisplay] = useState(1);
   const [itemOffset, setItemOffset] = useState(0);
-
   const [searchText, setSearchText] = useState<string>("");
-
-  const workerRef: React.MutableRefObject<Worker | undefined> = React.useRef();
 
   useEffect(() => {
     handlePageChange();
@@ -71,35 +75,30 @@ function PaginatedNFTsComponent({
 
   useEffect(() => {
     function searchReciever() {
-      if (!workerRef) return;
-
-      workerRef.current = new Worker(
-        new URL("../worker/searcher.js", import.meta.url)
-      );
-
-      workerRef.current.onmessage = (e) => {
+      if (!SearchWorker) return;
+      SearchWorker.onmessage = (e) => {
         const { searchResults } = e.data;
-
         setSearchResults(searchResults);
+        setRunningSearch(false);
       };
     }
 
     searchReciever();
 
     return () => {
-      if (!workerRef.current) return;
-      workerRef.current.terminate();
+      if (!SearchWorker) return;
+      SearchWorker.terminate();
     };
   }, []);
 
   const searchPoster = React.useCallback((searchText) => {
-    if (workerRef.current) {
-      workerRef?.current.postMessage({
-        searchText,
-        collection: NFTList,
-      });
-      setCurrentPageNum(0);
-    }
+    if (!SearchWorker) return;
+    setRunningSearch(true);
+    SearchWorker.postMessage({
+      searchText,
+      collection: NFTList,
+    });
+    setCurrentPageNum(0);
   }, []);
 
   useEffect(() => {
@@ -169,26 +168,44 @@ function PaginatedNFTsComponent({
           </Grid>
         </Grid>
       </Box>
-      <NFTPage
-        NFTCollection={searchResults.length ? searchResults : pageResults}
-        activeMintId={activeMintId}
-        cost={cost}
-        isNFTMinted={isNFTMinted}
-        setActiveMintId={setActiveMintId}
-        txState={txState}
-      />
-      <div className="pagination-wrapper">
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="&rarr;"
-          forcePage={currentPageNum}
-          onPageChange={(e) => setCurrentPageNum(e.selected)}
-          pageCount={pageCount}
-          previousLabel="&larr;"
-          pageLinkClassName="pagination-page-link"
-          className="pagination-container"
-        />
-      </div>
+      {runningSearch ? (
+        <Box
+          sx={{
+            paddingTop: "150px",
+            minHeight: "1000px",
+            display: "flex",
+            alignContent: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "1.5rem",
+          }}
+        >
+          Loading...
+        </Box>
+      ) : (
+        <>
+          <NFTPage
+            NFTCollection={searchResults.length ? searchResults : pageResults}
+            activeMintId={activeMintId}
+            cost={cost}
+            isNFTMinted={isNFTMinted}
+            setActiveMintId={setActiveMintId}
+            txState={txState}
+          />
+          <div className="pagination-wrapper">
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel="&rarr;"
+              forcePage={currentPageNum}
+              onPageChange={(e) => setCurrentPageNum(e.selected)}
+              pageCount={pageCount}
+              previousLabel="&larr;"
+              pageLinkClassName="pagination-page-link"
+              className="pagination-container"
+            />
+          </div>
+        </>
+      )}
     </>
   );
 }

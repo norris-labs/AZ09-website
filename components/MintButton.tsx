@@ -4,7 +4,7 @@ import { Button, Link } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/system";
 import { TransactionStatus } from "@usedapp/core";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 type MintButtonProps = {
   txState: TransactionStatus;
@@ -21,6 +21,10 @@ function MintButtonComponent({
   isNFTMinted,
   activeMintId,
 }: MintButtonProps) {
+  const handleMintBtnClick = useCallback(() => {
+    setActiveMintId(edition);
+  }, [edition]);
+
   if (txState?.status === "PendingSignature" && activeMintId === edition) {
     return (
       <CustomLoadingButton
@@ -46,12 +50,7 @@ function MintButtonComponent({
       Already Minted
     </CustomButtonSecondary>
   ) : (
-    <CustomButton
-      variant="contained"
-      onClick={() => {
-        setActiveMintId(edition);
-      }}
-    >
+    <CustomButton variant="contained" onClick={handleMintBtnClick}>
       {process.env.NEXT_PUBLIC_USE_SUDO_MINT ? "Sudo Mint" : "Mint"}
     </CustomButton>
   );

@@ -5,37 +5,24 @@ import * as React from "react";
 import { memo } from "react";
 
 export type ToastState = {
-  msg: string;
+  msg: string | null;
   level: TransactionState;
 };
 
 type ToastProps = {
   toastState: ToastState;
-  setToastState: (state: ToastState) => void;
+  setToastState: (state: ToastState | null) => void;
 };
 
 function ToastComponent({ toastState, setToastState }: ToastProps) {
   if (!toastState) return null;
   if ("msg" in toastState) return null;
   if ("level" in toastState) return null;
-  // const [toastOpen, setToastOpen] = useState(false);
-  //@ts-ignore
-  // const alertType: AlertProps = toastLeves[noticeType];
-
-  // React.useEffect(() => {
-  //   //@ts-ignore
-  //   setToastOpen(true);
-  //   // if (messageMap[message]) {
-  //   // }
-  // }, [message]);
-
-  // function closeToast() {
-  //   setToastOpen(false);
-  // }
+  const show = !!toastState.msg;
 
   return (
     <Snackbar
-      open={toastState.msg} //toastState
+      open={show}
       autoHideDuration={6000}
       onClose={() => setToastState(null)}
       message={"toastMessage"}

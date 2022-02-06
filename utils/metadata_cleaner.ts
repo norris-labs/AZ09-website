@@ -36,7 +36,6 @@ function findStringStart(items: NFTMetaData[]) {
 }
 
 function lettersFirst(items: NFTMetaData[]) {
-  console.log({ items });
   const letterStartIndex = findStringStart(items);
   const numbers = items.slice(0, letterStartIndex);
   const letters = items.slice(letterStartIndex);

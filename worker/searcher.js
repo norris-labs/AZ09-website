@@ -11,7 +11,7 @@ function filterNFTs(searchText, collection) {
   });
 }
 
-const filterNFTsDebounced = debounce(filterNFTs, 300, { leading: true });
+const filterNFTsDebounced = debounce(filterNFTs, 4000, { leading: true });
 
 addEventListener("message", (event) => {
   const { searchText, collection } = event.data;

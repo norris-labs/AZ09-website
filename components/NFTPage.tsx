@@ -27,7 +27,7 @@ function NFTPageComponent({
   setActiveMintId,
   txState,
 }: NFTPageProps) {
-  if (!NFTCollection) return <div>loading</div>;
+  if (!NFTCollection) return null;
 
   return (
     <Grid container spacing={{ xs: 2, md: 3 }}>
