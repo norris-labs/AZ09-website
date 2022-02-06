@@ -4,11 +4,6 @@ import { TransactionState } from "@usedapp/core";
 import * as React from "react";
 import { memo } from "react";
 
-export enum ToastLevels {
-  Exception = "error",
-  Success = "success",
-}
-
 export type ToastState = {
   msg: string;
   level: TransactionState;

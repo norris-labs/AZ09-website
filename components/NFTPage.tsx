@@ -10,34 +10,28 @@ import { memo } from "react";
 import { MintButton } from "./MintButton";
 import { TocDisplay } from "./TocDisplay";
 
-type NFTListProps = {
-  cost: string | number;
-  currentEdition: string;
-  NFTItems: NFTMetaData[] | null;
-  currentTab: number;
-  isNFTMinted: (id: number) => boolean;
+type NFTPageProps = {
+  NFTCollection: NFTMetaData[] | [];
   activeMintId: number | null;
+  cost: string | number;
+  isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
-  sendSudoMintTX: (id: number) => void;
   txState: TransactionStatus;
 };
 
-function NFTListComponent({
-  cost,
-  currentEdition,
-  NFTItems,
-  currentTab,
-  isNFTMinted,
+function NFTPageComponent({
+  NFTCollection,
   activeMintId,
+  cost,
+  isNFTMinted,
   setActiveMintId,
-  sendSudoMintTX,
   txState,
-}: NFTListProps) {
-  if (!NFTItems) return <div>loading</div>;
+}: NFTPageProps) {
+  if (!NFTCollection) return <div>loading</div>;
 
   return (
     <Grid container spacing={{ xs: 2, md: 3 }}>
-      {NFTItems.map((item) => {
+      {NFTCollection.map((item) => {
         const [, leftCharacter, rightCharacter] = item.attributes.map(
           (attribute) => attribute.value
         );
@@ -53,13 +47,11 @@ function NFTListComponent({
                     display: "flex",
                     overflow: "hidden",
                     border:
-                      currentEdition === "light" ? "1px solid #e2e2e2" : "none",
+                      item.variation === "light" ? "1px solid #e2e2e2" : "none",
                   }}
                 >
                   <Image
-                    src={`/images/${currentTab === 0 ? "light" : "dark"}/${
-                      item.edition
-                    }.png`}
+                    src={`/images/${item.variation}/${item.edition}.png`}
                     alt="nft-image"
                     width={400}
                     height={400}
@@ -83,25 +75,13 @@ function NFTListComponent({
                     />
                   </span>
                 </Box>
-                {process.env.LOCAL ? (
-                  <MintButton
-                    activeMintId={activeMintId}
-                    item={item}
-                    txState={txState}
-                    setActiveMintId={setActiveMintId}
-                    sendSudoMintTX={sendSudoMintTX}
-                    isNFTMinted={isNFTMinted}
-                  />
-                ) : (
-                  <MintButton
-                    activeMintId={activeMintId}
-                    item={item}
-                    txState={txState}
-                    setActiveMintId={setActiveMintId}
-                    sendSudoMintTX={sendSudoMintTX}
-                    isNFTMinted={isNFTMinted}
-                  />
-                )}
+                <MintButton
+                  activeMintId={activeMintId}
+                  edition={item.edition}
+                  txState={txState}
+                  setActiveMintId={setActiveMintId}
+                  isNFTMinted={isNFTMinted}
+                />
               </CardContent>
             </Card>
           </Grid>
@@ -111,4 +91,4 @@ function NFTListComponent({
   );
 }
 
-export const NFTList = memo(NFTListComponent);
+export const NFTPage = memo(NFTPageComponent);

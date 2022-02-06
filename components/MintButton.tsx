@@ -4,16 +4,24 @@ import { Button, Link } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/system";
 import { TransactionStatus } from "@usedapp/core";
+import { memo } from "react";
 
-export function MintButton({
-  item,
+type MintButtonProps = {
+  txState: TransactionStatus;
+  edition: number;
+  setActiveMintId: (id: number) => void;
+  activeMintId: number | null;
+  isNFTMinted: (id: number) => boolean;
+};
+
+function MintButtonComponent({
+  edition,
   txState,
   setActiveMintId,
   isNFTMinted,
-  sendSudoMintTX,
   activeMintId,
 }: MintButtonProps) {
-  if (txState?.status === "PendingSignature" && activeMintId === item.edition) {
+  if (txState?.status === "PendingSignature" && activeMintId === edition) {
     return (
       <CustomLoadingButton
         loading
@@ -28,9 +36,9 @@ export function MintButton({
     );
   }
 
-  return isNFTMinted(item.edition) ? (
+  return isNFTMinted(edition) ? (
     <CustomButtonSecondary
-      href={`${process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}/${item.edition}`}
+      href={`${process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}/${edition}`}
       target="_blank"
       variant="contained"
       endIcon={<OpenInNewIcon />}
@@ -41,9 +49,7 @@ export function MintButton({
     <CustomButton
       variant="contained"
       onClick={() => {
-        process.env.NEXT_PUBLIC_USE_SUDO_MINT
-          ? sendSudoMintTX(item.edition)
-          : setActiveMintId(item.edition);
+        setActiveMintId(edition);
       }}
     >
       {process.env.NEXT_PUBLIC_USE_SUDO_MINT ? "Sudo Mint" : "Mint"}
@@ -51,14 +57,7 @@ export function MintButton({
   );
 }
 
-type MintButtonProps = {
-  txState: TransactionStatus;
-  item: NFTMetaData;
-  setActiveMintId: (id: number) => void;
-  sendSudoMintTX: (id: number) => void;
-  activeMintId: number | null;
-  isNFTMinted: (id: number) => boolean;
-};
+export const MintButton = memo(MintButtonComponent);
 
 export const CustomButton = styled(Button)`
   width: 100%;

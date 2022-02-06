@@ -1,32 +1,31 @@
-import Box from "@mui/material/Box";
 import { TransactionStatus } from "@usedapp/core";
 import React, { memo } from "react";
+import { metadata as metadataDark } from "../utils/metadata_dark";
+import { metadata as metadataLight } from "../utils/metadata_light";
 import { PaginatedNFTs } from "./PaginatedNFTs";
-import { Tab, TabContainer, TabList, TabPanel } from "./Tabs";
+import { Tab, TabChicklet, TabContainer, TabList, TabPanel } from "./Tabs";
 
-type ContentProps = {
+type AppProps = {
   activeMintId: number | null;
   cost: string | number;
-  currentEdition: string;
+  editionName: string;
   currentTab: number;
   isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
-  sendSudoMintTX: (id: number) => void;
   setCurrentTab: (id: number) => void;
   txState: TransactionStatus;
 };
 
-function ContentComponent({
+function AppComponent({
   isNFTMinted,
   setActiveMintId,
-  sendSudoMintTX,
   cost,
   txState,
   activeMintId,
   setCurrentTab,
-  currentEdition,
+  editionName,
   currentTab,
-}: ContentProps) {
+}: AppProps) {
   return (
     <TabContainer defaultValue={0}>
       <TabList>
@@ -37,8 +36,8 @@ function ContentComponent({
         >
           <TabChicklet tabNum={0} currentTab={currentTab}>
             1
-          </TabChicklet>{" "}
-          Light Edition
+          </TabChicklet>
+          Dark Edition
         </Tab>
         <Tab
           onChange={(_e, value) => {
@@ -47,65 +46,36 @@ function ContentComponent({
         >
           <TabChicklet tabNum={1} currentTab={currentTab}>
             2
-          </TabChicklet>
-          Dark Edition
+          </TabChicklet>{" "}
+          Light Edition
         </Tab>
       </TabList>
 
       <TabPanel value={0}>
         <PaginatedNFTs
-          cost={cost}
-          currentEdition={currentEdition}
-          currentTab={currentTab}
-          itemsPerPage={30}
-          isNFTMinted={isNFTMinted}
-          setActiveMintId={setActiveMintId}
-          sendSudoMintTX={sendSudoMintTX}
-          txState={txState}
+          NFTList={metadataDark}
           activeMintId={activeMintId}
+          cost={cost}
+          isNFTMinted={isNFTMinted}
+          itemsPerPage={30}
+          setActiveMintId={setActiveMintId}
+          txState={txState}
         />
       </TabPanel>
 
       <TabPanel value={1}>
         <PaginatedNFTs
-          cost={cost}
-          currentTab={currentTab}
-          currentEdition={currentEdition}
-          itemsPerPage={30}
-          isNFTMinted={isNFTMinted}
-          setActiveMintId={setActiveMintId}
-          sendSudoMintTX={sendSudoMintTX}
-          txState={txState}
+          NFTList={metadataLight}
           activeMintId={activeMintId}
+          cost={cost}
+          isNFTMinted={isNFTMinted}
+          itemsPerPage={30}
+          setActiveMintId={setActiveMintId}
+          txState={txState}
         />
       </TabPanel>
     </TabContainer>
   );
 }
 
-const TabChicklet: React.FC<{ currentTab: number; tabNum: number }> = ({
-  children,
-  currentTab,
-  tabNum,
-}) => {
-  return (
-    <Box
-      sx={{
-        background: `${currentTab === tabNum ? "black" : "white"}`,
-        color: `${currentTab === tabNum ? "white" : "black"}`,
-        width: "1.5rem",
-        height: "1.5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "100%",
-        fontSize: ".95rem",
-        marginRight: "5px",
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
-
-export const Content = memo(ContentComponent);
+export const App = memo(AppComponent);

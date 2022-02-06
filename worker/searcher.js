@@ -1,14 +1,20 @@
-function searchResults(searchText, collection) {
+const filter = require("lodash.filter");
+const debounce = require("lodash.debounce");
+
+function filterNFTs(searchText, collection) {
   if (searchText === "" || searchText === null) {
     return [];
   }
-  return collection.filter(({ attrString }) => {
-    return attrString.toLowerCase().includes(searchText.toLowerCase());
+
+  return filter(collection, (item) => {
+    return item.attrString.toLowerCase().includes(searchText.toLowerCase());
   });
 }
 
+const filterNFTsDebounced = debounce(filterNFTs, 300, { leading: true });
+
 addEventListener("message", (event) => {
   const { searchText, collection } = event.data;
-  const _searchResults = searchResults(searchText, collection) || [];
+  const _searchResults = filterNFTsDebounced(searchText, collection) || [];
   postMessage({ searchResults: _searchResults, searchText });
 });

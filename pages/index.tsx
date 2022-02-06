@@ -6,9 +6,9 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import * as React from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { Content } from '../components/Content';
+import { App } from '../components/App';
 import { Navigation } from '../components/Navigation';
-import { Toast, ToastLevels } from '../components/Toast';
+import { Toast, ToastState } from '../components/Toast';
 import { useCost } from "../hooks/useCost";
 import { useMint } from "../hooks/useMint";
 import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
@@ -23,27 +23,36 @@ enum Edition {
   dark = 'dark'
 }
 
+export enum TXStates {
+  None = "None",
+  PendingSignature = "PendingSignature",
+  Mining = "Mining",
+  Success = "Success",
+  Fail = "Fail",
+  Exception = "Exception",
+}
+
+
 const Home: NextPage = () => {
   const { activateBrowserWallet, account } = useEthers()
   const [currentTab, setCurrentTab] = useState<number>(0)
   const cost: number = useCost()
   const mintedTokenIDs = useMintedTokenIDs()
-  const [toastState, setToastState] = useState<{msg: string, level: ToastLevels}|null>(null);
-  const [currentEdition, setCurrentEdition] = useState('light');
+  const [toastState, setToastState] = useState<ToastState|null>(null);
+  const [editionName, setEditionName] = useState<'light'|'dark'>('light');
   const [activeMintId, setActiveMintId] = useState<null|number>(null);
-  const {state: mintTxState, send: sendMintTx} = useMint(currentEdition);
-  const {state: sudoMintTxState, send: sudoMintTx} = useMint(currentEdition);
+  const {state: mintTxState, send: sendMintTx} = useMint(editionName);
 
   useEffect(() => {
-    let _currentEdition;
+    let _editionName;
 
     if (currentTab === 0) {
-      _currentEdition = Edition.light
+      _editionName = Edition.light
     } else {
-      _currentEdition = Edition.dark
+      _editionName = Edition.dark
     }
 
-    setCurrentEdition(_currentEdition)
+    setEditionName(_editionName)
   }, [currentTab])
 
   useEffect(() => {
@@ -51,7 +60,7 @@ const Home: NextPage = () => {
     const level = mintTxState.status;
     if (!message && !level) return;
 
-    const toastArgs: ToastLevels = {
+    const toastArgs: ToastState = {
       msg: message,
       level
     }
@@ -73,7 +82,7 @@ const Home: NextPage = () => {
   const handleWalletDisconnected = useCallback(() => {
     const toastArgs = {
       msg: Copy.connectWallet,
-      level: ToastLevels.Exception
+      level: TXStates.Exception
     }
     setToastState(toastArgs);
     alert(JSON.stringify(toastArgs));
@@ -96,21 +105,6 @@ const Home: NextPage = () => {
       });
     } catch(e) {
       handleMintError()
-    }
-  }, [activeMintId])
-
-
-  const sendSudoMintTX = useCallback(() => {
-    if (!account) {
-      handleWalletDisconnected();
-    }
-
-    try {
-      sudoMintTx(activeMintId, {
-        value: cost
-      });
-    } catch(e) {
-
     }
   }, [activeMintId])
 
@@ -145,13 +139,12 @@ const Home: NextPage = () => {
             AZ09 is a collection of 2,592 unique, programmatically generated monogram <b><Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link></b> on the <b><Link target="_blank" href="https://fantom.foundation/">Fantom network</Link></b>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.
           </Typography>
         </Box>
-        <Content
+        <App
           activeMintId={activeMintId}
           cost={cost ? utils.formatEther(cost) : 0}
-          currentEdition={currentEdition}
+          editionName={editionName}
           currentTab={currentTab}
           isNFTMinted={isNFTMinted}
-          sendSudoMintTX={sendSudoMintTX}
           setActiveMintId={setActiveMintId}
           setCurrentTab={setCurrentTab}
           txState={mintTxState}

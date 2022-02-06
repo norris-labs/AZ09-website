@@ -2,12 +2,13 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Blockies from "react-blockies";
 import truncateEthAddress from "truncate-eth-address";
+import { TXStates } from "../pages/index";
 import { ToastState } from "./Toast";
 
 type NavigationProps = {
   account?: string | null;
   activateBrowserWallet: () => void;
-  toastState: ToastState;
+  toastState: ToastState | null;
   setToastState: (state: ToastState) => void;
 };
 
@@ -22,7 +23,11 @@ export function Navigation({
       await activateBrowserWallet();
     } catch (e) {
       if ("message" in e) {
-        setToastState(e.message);
+        const toastArgs: ToastState = {
+          msg: e.message,
+          level: TXStates.Exception,
+        };
+        setToastState(toastArgs);
       }
       alert(JSON.stringify(e));
     }
