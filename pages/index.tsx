@@ -13,7 +13,6 @@ import { useCost } from "../hooks/useCost";
 import { useMint } from "../hooks/useMint";
 import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
 
-
 enum Copy {
   connectWallet = 'Connect wallet first before minting',
 }
@@ -39,7 +38,7 @@ const Home: NextPage = () => {
   const cost: number = useCost()
   const mintedTokenIDs = useMintedTokenIDs()
   const [toastState, setToastState] = useState<ToastState|null>(null);
-  const [editionName, setEditionName] = useState<'light'|'dark'>('light');
+  const [editionName, setEditionName] = useState<'light'|'dark'>('dark');
   const [activeMintId, setActiveMintId] = useState<null|number>(null);
   const {state: mintTxState, send: sendMintTx} = useMint(editionName);
 

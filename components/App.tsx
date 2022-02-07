@@ -1,15 +1,14 @@
 import { TransactionStatus } from "@usedapp/core";
 import React, { memo } from "react";
-import { metadata as metadataDark } from "../utils/metadata_dark";
-import { metadata as metadataLight } from "../utils/metadata_light";
+import { EditionNames } from '../constants';
 import { PaginatedNFTs } from "./PaginatedNFTs";
 import { Tab, TabChicklet, TabContainer, TabList, TabPanel } from "./Tabs";
 
 type AppProps = {
   activeMintId: number | null;
   cost: string | number;
-  editionName: string;
   currentTab: number;
+  editionName: string;
   isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
   setCurrentTab: (id: number) => void;
@@ -20,10 +19,10 @@ function AppComponent({
   isNFTMinted,
   setActiveMintId,
   cost,
+  editionName,
   txState,
   activeMintId,
   setCurrentTab,
-  editionName,
   currentTab,
 }: AppProps) {
   return (
@@ -53,11 +52,10 @@ function AppComponent({
 
       <TabPanel value={0}>
         <PaginatedNFTs
-          NFTList={metadataDark}
           activeMintId={activeMintId}
+          editionName={EditionNames.Dark}
           cost={cost}
           isNFTMinted={isNFTMinted}
-          itemsPerPage={30}
           setActiveMintId={setActiveMintId}
           txState={txState}
         />
@@ -65,11 +63,10 @@ function AppComponent({
 
       <TabPanel value={1}>
         <PaginatedNFTs
-          NFTList={metadataLight}
           activeMintId={activeMintId}
           cost={cost}
+          editionName={EditionNames.Light}
           isNFTMinted={isNFTMinted}
-          itemsPerPage={30}
           setActiveMintId={setActiveMintId}
           txState={txState}
         />

@@ -12,7 +12,7 @@ const SearchButtonComponent = styled(Button)`
 export const SearchButton = memo(SearchButtonComponent);
 
 type SearchBoxProps = {
-  onChange: (searchText: string) => void;
+  onChange: (searchTerm: string) => void;
 };
 
 function SearchBoxComponent({ onChange }: SearchBoxProps) {

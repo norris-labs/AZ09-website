@@ -1,17 +1,18 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { TransactionStatus } from "@usedapp/core";
+import axios from "axios";
 import React, { memo, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
+import { API_URL } from "../constants";
 import { NFTPage } from "./NFTPage";
 import { SearchBox } from "./SearchBox";
 
 type PaginatedNFTsProps = {
-  NFTList: NFTMetaData[];
   activeMintId: number | null;
   cost: string | number;
   isNFTMinted: (id: number) => boolean;
-  itemsPerPage: number;
+  editionName: string;
   setActiveMintId: (id: number) => void;
   txState: TransactionStatus;
 };
@@ -20,105 +21,67 @@ function doScrollToTop(): void {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function calcNewOffset(
-  pageNum: number,
-  itemsPerPage: number,
-  itemsToPaginate: NFTMetaData[]
-) {
-  return (pageNum * itemsPerPage) % itemsToPaginate.length;
-}
-
-let SearchWorker: Worker;
-
-if (process.browser) {
-  SearchWorker = new Worker(new URL("../worker/searcher.js", import.meta.url));
-}
-
 function PaginatedNFTsComponent({
   cost,
   isNFTMinted,
-  itemsPerPage,
   activeMintId,
   setActiveMintId,
   txState,
-  NFTList,
+  editionName,
 }: PaginatedNFTsProps) {
-  const [searchResults, setSearchResults] = useState<[] | NFTMetaData[]>([]);
   const [pageResults, setPageResults] = useState<[] | NFTMetaData[]>([]);
   const [runningSearch, setRunningSearch] = useState(false);
 
   // ------------ number of total pages ------------ //
   const [pageCount, setPageCount] = useState(0);
-  const [currentPageNum, setCurrentPageNum] = useState(0);
-  const [currentPageNumDisplay, setCurrentPageNumDisplay] = useState(1);
-  const [itemOffset, setItemOffset] = useState(0);
-  const [searchText, setSearchText] = useState<string>("");
+  const [pageNum, setPageNum] = useState(0);
+  const [pageNumDisplay, setPageNumDisplay] = useState(1);
+  const [searchTerm, setsearchTerm] = useState<string>("");
 
   useEffect(() => {
-    handlePageChange();
-    setCurrentPageNumDisplay(currentPageNum + 1);
-  }, [currentPageNum]);
-
-  useEffect(() => {
-    function calcPagePagination() {
-      const _endOffset = itemOffset + itemsPerPage;
-      const collectionsToPaginate = searchResults?.length
-        ? searchResults
-        : NFTList;
-
-      setPageResults(collectionsToPaginate.slice(itemOffset, _endOffset));
-      setPageCount(Math.ceil(collectionsToPaginate.length / itemsPerPage));
-    }
-
-    calcPagePagination();
-  }, [itemOffset, itemsPerPage, searchResults.length]);
-
-  useEffect(() => {
-    function searchReciever() {
-      if (!SearchWorker) return;
-      SearchWorker.onmessage = (e) => {
-        const { searchResults } = e.data;
-        setSearchResults(searchResults);
-        setRunningSearch(false);
-      };
-    }
-
-    searchReciever();
-
-    return () => {
-      if (!SearchWorker) return;
-      SearchWorker.terminate();
+    const body = {
+      edition: editionName,
     };
-  }, []);
-
-  const searchPoster = React.useCallback((searchText) => {
-    if (!SearchWorker) return;
-    setRunningSearch(true);
-    SearchWorker.postMessage({
-      searchText,
-      collection: NFTList,
+    axios.post(API_URL, body).then(({ data }) => {
+      setPageResults(data.result);
+      setPageCount(data.pageCount);
+      setPageNum(data.pageNum);
     });
-    setCurrentPageNum(0);
   }, []);
 
   useEffect(() => {
-    searchPoster(searchText);
-  }, [searchText]);
+    // handlePageChange();
+    setPageNumDisplay(pageNum + 1);
+  }, [pageNum]);
 
-  const handlePageChange = React.useCallback(() => {
-    const collectionsToPaginate = searchResults?.length
-      ? searchResults
-      : NFTList;
+  const searchPoster = React.useCallback((searchTerm) => {
+    setRunningSearch(true);
+    const body = { edition: editionName, searchTerm };
 
-    const newOffset = calcNewOffset(
-      currentPageNum,
-      itemsPerPage,
-      collectionsToPaginate
-    );
+    axios.post(API_URL, body).then(({ data }) => {
+      setPageResults(data.result);
+      setPageCount(data.pageCount);
+      setRunningSearch(false);
+      setPageNum(0);
+    });
+  }, []);
 
-    setItemOffset(newOffset);
-    doScrollToTop();
-  }, [currentPageNum]);
+  useEffect(() => {
+    searchPoster(searchTerm);
+  }, [searchTerm]);
+
+  const handlePageChange = React.useCallback((pageNum: number) => {
+    setRunningSearch(true);
+    const body = { edition: editionName, searchTerm, pageNum };
+
+    axios.post(API_URL, body).then(({ data }) => {
+      setPageResults(data.result);
+      setPageCount(data.pageCount);
+      setRunningSearch(false);
+      setPageNum(data.pageNum);
+      doScrollToTop();
+    });
+  }, []);
 
   return (
     <>
@@ -143,16 +106,16 @@ function PaginatedNFTsComponent({
               }}
             >
               <Box>
-                Page — {currentPageNumDisplay} / {pageCount}
+                Page — {pageNumDisplay} / {pageCount}
               </Box>
-              {searchResults.length > 0 && (
+              {searchTerm && (
                 <Box
                   sx={{
                     color: "#a8a8a8",
                   }}
                 >
-                  {searchResults.length} search{" "}
-                  {searchResults.length > 1 ? "results" : "result"}
+                  {pageResults.length} search{" "}
+                  {pageResults.length > 1 ? "results" : "result"}
                 </Box>
               )}
             </Box>
@@ -161,7 +124,7 @@ function PaginatedNFTsComponent({
             <Box sx={{ display: "flex" }}>
               <SearchBox
                 onChange={(inputStr) => {
-                  setSearchText(inputStr);
+                  setsearchTerm(inputStr);
                 }}
               />
             </Box>
@@ -185,7 +148,7 @@ function PaginatedNFTsComponent({
       ) : (
         <>
           <NFTPage
-            NFTCollection={searchResults.length ? searchResults : pageResults}
+            NFTCollection={pageResults}
             activeMintId={activeMintId}
             cost={cost}
             isNFTMinted={isNFTMinted}
@@ -196,8 +159,8 @@ function PaginatedNFTsComponent({
             <ReactPaginate
               breakLabel="..."
               nextLabel="&rarr;"
-              forcePage={currentPageNum}
-              onPageChange={(e) => setCurrentPageNum(e.selected)}
+              forcePage={pageNum}
+              onPageChange={(e) => handlePageChange(e.selected)}
               pageCount={pageCount}
               previousLabel="&larr;"
               pageLinkClassName="pagination-page-link"
