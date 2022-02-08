@@ -1,25 +1,26 @@
 import { Container, Link, Typography } from '@mui/material';
+import * as React from 'react';
 import Box from "@mui/material/Box";
-import { useEthers } from '@usedapp/core';
+import { useEthers, TransactionState } from '@usedapp/core';
 import { utils } from 'ethers';
 import type { NextPage } from 'next';
+import { Fantom } from "@usedapp/core";
 import Head from 'next/head';
-import * as React from 'react';
+import { capitalize } from "@mui/material";
 import { memo, useCallback, useEffect, useState } from 'react';
 import { App } from '../components/App';
 import { Navigation } from '../components/Navigation';
-import { Toast, ToastState } from '../components/Toast';
+import { Toast } from '../components/Toast';
 import { useCost } from "../hooks/useCost";
+import { EditionNames } from '../constants'
 import { useMint } from "../hooks/useMint";
 import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
 
 enum Copy {
-  connectWallet = 'Connect wallet first before minting',
-}
-
-enum Edition {
-  light = 'light',
-  dark = 'dark'
+  connectWallet = 'Connect wallet before minting',
+  switchChain = 'Switch to Fantom Chain before minting',
+  mintError = 'There was an error minting NFT, try again',
+  unknownError = 'There has been an unknown error, try again',
 }
 
 export enum TXStates {
@@ -31,41 +32,33 @@ export enum TXStates {
   Exception = "Exception",
 }
 
-
 const Home: NextPage = () => {
-  const { activateBrowserWallet, account } = useEthers()
+  const {
+    activateBrowserWallet,
+    chainId,
+    account,
+    error
+  } = useEthers();
   const [currentTab, setCurrentTab] = useState<number>(0)
   const cost: number = useCost()
   const mintedTokenIDs = useMintedTokenIDs()
-  const [toastState, setToastState] = useState<ToastState|null>(null);
+  const [toastType, setToastType] = useState<TransactionState|null>();
+  const [toastMessage, setToastMessage] = useState<string|null>();
   const [editionName, setEditionName] = useState<'light'|'dark'>('dark');
   const [activeMintId, setActiveMintId] = useState<null|number>(null);
   const {state: mintTxState, send: sendMintTx} = useMint(editionName);
 
   useEffect(() => {
-    let _editionName;
+    let focusedEdition;
 
     if (currentTab === 0) {
-      _editionName = Edition.light
+      focusedEdition = EditionNames.Light
     } else {
-      _editionName = Edition.dark
+      focusedEdition = EditionNames.Dark
     }
 
-    setEditionName(_editionName)
+    setEditionName(focusedEdition)
   }, [currentTab])
-
-  useEffect(() => {
-    const message = mintTxState.errorMessage || mintTxState.status;
-    const level = mintTxState.status;
-    if (!message && !level) return;
-
-    const toastArgs: ToastState = {
-      msg: message,
-      level
-    }
-
-    setToastState(toastArgs)
-  }, [mintTxState.status])
 
   useEffect(() => {
     if (mintTxState.status === "None" || mintTxState.status === "Exception") {
@@ -73,37 +66,49 @@ const Home: NextPage = () => {
     }
   }, [activeMintId])
 
+  const closeToast = useCallback(() => {
+    setToastMessage(null);
+    setToastType(null);
+  }, []);
+
+  useEffect(() => {
+    if (
+      mintTxState.status === 'Exception' ||
+      mintTxState.status === 'Fail' ||
+      mintTxState.status === 'Success' ||
+      mintTxState.status === 'Mining') {
+        if (!mintTxState.errorMessage) {
+          setToastMessage(Copy.unknownError);
+          return;
+        }
+        setToastMessage(capitalize(mintTxState.errorMessage));
+        setToastType(mintTxState.status);
+    }
+  }, [mintTxState.status])
+
   useEffect(() => {
     if (!activeMintId) return;
+    if (!account) {
+      setToastType('Exception');
+      setToastMessage(Copy.connectWallet);
+      return;
+    }
+    if (Fantom.chainId !== chainId) {
+      setToastType('Exception');
+      setToastMessage(Copy.switchChain);
+      return;
+    }
     handleNFTMint();
   }, [activeMintId])
 
-  const handleWalletDisconnected = useCallback(() => {
-    const toastArgs = {
-      msg: Copy.connectWallet,
-      level: TXStates.Exception
-    }
-    setToastState(toastArgs);
-    alert(JSON.stringify(toastArgs));
-  }, [])
-
-  const handleMintError = useCallback(() => {
-    if (!toastState) return;
-    setToastState(toastState);
-    alert(JSON.stringify(toastState.msg));
-  }, [toastState])
-
   const handleNFTMint = useCallback(() => {
-    if (!account) {
-      handleWalletDisconnected();
-    }
-
     try {
       sendMintTx(activeMintId, {
         value: cost
       });
     } catch(e) {
-      handleMintError()
+      setToastType('Exception');
+      setToastMessage(Copy.mintError);
     }
   }, [activeMintId])
 
@@ -123,9 +128,8 @@ const Home: NextPage = () => {
       <Container fixed maxWidth="xl">
         <Navigation
           account={account}
+          chainId={chainId}
           activateBrowserWallet={activateBrowserWallet}
-          toastState={toastState}
-          setToastState={setToastState}
         />
         <Box sx={{
           my: 10
@@ -149,13 +153,16 @@ const Home: NextPage = () => {
           txState={mintTxState}
         />
 
-        {JSON.stringify(mintTxState)}
+        mintTxState: {JSON.stringify(mintTxState)}
+        error: {JSON.stringify(error)}
+        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)}
         {process.env.NEXT_PUBLIC_CHAIN_ID}
 
-        {toastState &&
+        {toastMessage && toastType &&
           <Toast
-            toastState={toastState}
-            setToastState={setToastState}
+            toastMessage={toastMessage}
+            toastType={toastType}
+            closeToast={closeToast}
           />
         }
 

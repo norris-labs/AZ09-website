@@ -2,35 +2,98 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Blockies from "react-blockies";
 import truncateEthAddress from "truncate-eth-address";
-import { TXStates } from "../pages/index";
-import { ToastState } from "./Toast";
+import { theme } from "../utils/theme";
+import { Fantom, ChainId } from "@usedapp/core";
 
 type NavigationProps = {
   account?: string | null;
+  chainId?: ChainId;
   activateBrowserWallet: () => void;
-  toastState: ToastState | null;
-  setToastState: (state: ToastState) => void;
 };
+
+function WrongNetwork() {
+  return (
+    <Button
+      disableRipple
+      sx={{
+        borderRadius: "100px",
+        background: theme.palette.primary.main,
+        border: "none",
+        padding: "10px 15px",
+        fontSize: "1rem",
+        color: "black",
+        "&:hover": {
+          cursor: "default",
+          background: theme.palette.primary.main,
+        },
+      }}
+    >
+      <Box sx={{ paddingRight: "10px" }}>Wrong Network (switch to Fantom)</Box>
+    </Button>
+  );
+}
+
+function ConnectedWalletButton({
+  account,
+  chainId,
+}: {
+  chainId?: ChainId;
+  account: string;
+}) {
+  if (account && Number(chainId) !== Fantom.chainId) {
+    return <WrongNetwork />;
+  }
+
+  return (
+    <Button
+      sx={{
+        background: "#333232",
+        border: "none",
+        padding: "10px 15px",
+        fontSize: "1rem",
+        color: "white",
+        "&:hover": {
+          background: "#555555",
+        },
+      }}
+    >
+      <Blockies size={6} className="blockie" seed={account} />
+      {truncateEthAddress(account)}
+    </Button>
+  );
+}
+
+function DisconnectedWalletButton({
+  handleWalletConnect,
+}: {
+  handleWalletConnect: () => void;
+}) {
+  return (
+    <Button
+      onClick={handleWalletConnect}
+      sx={{
+        background: theme.palette.primary.main,
+        border: "none",
+        padding: "10px 15px",
+        fontSize: "1rem",
+        color: "black",
+        "&:hover": {
+          background: theme.palette.primary.main,
+        },
+      }}
+    >
+      Connect Wallet
+    </Button>
+  );
+}
 
 export function Navigation({
   account,
-  toastState,
-  setToastState,
+  chainId,
   activateBrowserWallet,
 }: NavigationProps) {
   async function connectWallet() {
-    try {
-      await activateBrowserWallet();
-    } catch (e) {
-      if ("message" in e) {
-        const toastArgs: ToastState = {
-          msg: e.message,
-          level: TXStates.Exception,
-        };
-        setToastState(toastArgs);
-      }
-      alert(JSON.stringify(e));
-    }
+    await activateBrowserWallet();
   }
 
   return (
@@ -44,45 +107,13 @@ export function Navigation({
     >
       {account ? (
         <div>
-          <Button
-            sx={{
-              background: "#333232",
-              border: "none",
-              padding: "10px 15px",
-              fontSize: "1rem",
-              color: "white",
-              "&:hover": {
-                background: "#555555",
-              },
-            }}
-          >
-            <Blockies size={6} className="blockie" seed={account} />
-            {truncateEthAddress(account)}
-          </Button>
+          <ConnectedWalletButton chainId={chainId} account={account} />
         </div>
       ) : (
         <div>
-          <Button
-            onClick={connectWallet}
-            sx={{
-              background: "#333232",
-              border: "none",
-              padding: "10px 15px",
-              fontSize: "1rem",
-              color: "white",
-              "&:hover": {
-                background: "#555555",
-              },
-            }}
-          >
-            Connect Wallet
-          </Button>
+          <DisconnectedWalletButton handleWalletConnect={connectWallet} />
         </div>
       )}
-
-      {/* <button onClick={openNotice}>Open Notice</button> */}
-      {/* <p>Max Mintable: {maxMintable ? maxMintable.toNumber() : 0}</p>
-      <p>Cost: {cost ? utils.formatEther(cost) : 0}</p> */}
     </Box>
   );
 }

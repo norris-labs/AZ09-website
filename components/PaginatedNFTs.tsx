@@ -8,6 +8,10 @@ import { API_URL } from "../constants";
 import { NFTPage } from "./NFTPage";
 import { SearchBox } from "./SearchBox";
 
+// function pushURLHash() {
+//   window.location.que
+// }
+
 type PaginatedNFTsProps = {
   activeMintId: number | null;
   cost: string | number;
@@ -17,7 +21,7 @@ type PaginatedNFTsProps = {
   txState: TransactionStatus;
 };
 
-function doScrollToTop(): void {
+function scrollUp(): void {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -50,7 +54,6 @@ function PaginatedNFTsComponent({
   }, []);
 
   useEffect(() => {
-    // handlePageChange();
     setPageNumDisplay(pageNum + 1);
   }, [pageNum]);
 
@@ -70,18 +73,21 @@ function PaginatedNFTsComponent({
     searchPoster(searchTerm);
   }, [searchTerm]);
 
-  const handlePageChange = React.useCallback((pageNum: number) => {
-    setRunningSearch(true);
-    const body = { edition: editionName, searchTerm, pageNum };
+  const handlePageChange = React.useCallback(
+    (pageNum: number) => {
+      setRunningSearch(true);
+      const body = { edition: editionName, searchTerm, pageNum };
 
-    axios.post(API_URL, body).then(({ data }) => {
-      setPageResults(data.result);
-      setPageCount(data.pageCount);
-      setRunningSearch(false);
-      setPageNum(data.pageNum);
-      doScrollToTop();
-    });
-  }, []);
+      axios.post(API_URL, body).then(({ data }) => {
+        setPageResults(data.result);
+        setPageCount(data.pageCount);
+        setRunningSearch(false);
+        setPageNum(data.pageNum);
+        scrollUp();
+      });
+    },
+    [searchTerm]
+  );
 
   return (
     <>

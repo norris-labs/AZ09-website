@@ -1,6 +1,6 @@
 import { TransactionStatus } from "@usedapp/core";
 import React, { memo } from "react";
-import { EditionNames } from '../constants';
+import { EditionNames } from "../constants";
 import { PaginatedNFTs } from "./PaginatedNFTs";
 import { Tab, TabChicklet, TabContainer, TabList, TabPanel } from "./Tabs";
 
@@ -26,7 +26,7 @@ function AppComponent({
   currentTab,
 }: AppProps) {
   return (
-    <TabContainer defaultValue={0}>
+    <TabContainer defaultValue={0} id="tab-container">
       <TabList>
         <Tab
           onChange={(_e, value) => {

@@ -1,10 +1,28 @@
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button, Link } from "@mui/material";
+import { Button, Link, css } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/system";
 import { TransactionStatus } from "@usedapp/core";
 import { memo, useCallback } from "react";
+
+const ButtonBase = css`
+  width: 100%;
+  box-shadow: none;
+  border-radius: 50px;
+  padding: 0;
+  line-height: 0;
+  font-size: 1.25rem;
+  min-height: 47px;
+  font-weight: 700;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  text-decoration: none;
+  text-transform: uppercase;
+  &:hover,
+  &:active,
+  &:focus {
+    box-shadow: none;
+  }
+`;
 
 type MintButtonProps = {
   txState: TransactionStatus;
@@ -31,7 +49,7 @@ function MintButtonComponent({
         loading
         variant="contained"
         loadingIndicator={
-          <CircularProgress sx={{ color: "black", fill: "black" }} size={16} />
+          <CircularProgress sx={{ color: "black", fill: "black" }} size={23} />
         }
         disabled={false}
       >
@@ -41,62 +59,50 @@ function MintButtonComponent({
   }
 
   return isNFTMinted(edition) ? (
-    <CustomButtonSecondary
+    <LinkButton
       href={`${process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}/${edition}`}
       target="_blank"
-      variant="contained"
-      endIcon={<OpenInNewIcon />}
     >
-      Already Minted
-    </CustomButtonSecondary>
+      View on PaintSwap
+    </LinkButton>
   ) : (
-    <CustomButton variant="contained" onClick={handleMintBtnClick}>
+    <ActionButton variant="contained" onClick={handleMintBtnClick}>
       {process.env.NEXT_PUBLIC_USE_SUDO_MINT ? "Sudo Mint" : "Mint"}
-    </CustomButton>
+    </ActionButton>
   );
 }
 
 export const MintButton = memo(MintButtonComponent);
 
-export const CustomButton = styled(Button)`
-  width: 100%;
-  box-shadow: none;
-  border-radius: 50px;
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding: 6px;
-  &:hover,
-  &:active,
-  &:focus {
-    box-shadow: none;
-  }
-
+export const ActionButton = styled(Button)`
+  ${ButtonBase}
   .Mui-disabled {
     background: #c8c6c5;
   }
 `;
 
-export const CustomButtonSecondary = styled(Link)`
-  width: 100%;
-  box-shadow: none;
-  padding: 12px;
+export const LinkButton = styled(Link)`
+  ${ButtonBase}
+  display: flex;
+  font-size: 1.1rem;
+  justify-content: space-around;
+  align-items: center;
   background: #8d8d8d;
+  color: white;
   &:hover,
   &:active,
   &:focus {
     background: #6e6e6e;
     box-shadow: none;
   }
-
   .Mui-disabled {
     background: #c8c6c5;
   }
 `;
 
 export const CustomLoadingButton = styled(LoadingButton)`
-  box-shadow: none;
-  width: 100%;
-  padding: 12px;
+  ${ButtonBase}
+  font-size: 1.4rem !important;
   &:hover,
   &:active,
   &:focus {

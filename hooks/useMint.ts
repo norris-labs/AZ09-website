@@ -1,8 +1,8 @@
-import AZ09DarkABI from '../abi/AZ09-dark-abi.json';
-import AZ09LightABI from '../abi/AZ09-light-abi.json';
-import { Contract } from '@ethersproject/contracts';
-import { ethers } from 'ethers';
-import { useContractFunction } from '@usedapp/core';
+import AZ09DarkABI from "../abi/AZ09-dark-abi.json";
+import AZ09LightABI from "../abi/AZ09-light-abi.json";
+import { Contract } from "@ethersproject/contracts";
+import { ethers } from "ethers";
+import { useContractFunction } from "@usedapp/core";
 
 const Az09LightContractInterface = new ethers.utils.Interface(AZ09LightABI);
 const Az09DarkContractInterface = new ethers.utils.Interface(AZ09DarkABI);
@@ -25,8 +25,8 @@ const AZ09DarkContract = new Contract(
 
 export function useMint(contractTarget: string) {
   const contract =
-    contractTarget === 'dark' ? AZ09DarkContract : AZ09LightContract;
+    contractTarget === "dark" ? AZ09DarkContract : AZ09LightContract;
 
-  const { state, send } = useContractFunction(contract, 'mint', {});
+  const { state, send } = useContractFunction(contract, "mint", {});
   return { state, send };
 }

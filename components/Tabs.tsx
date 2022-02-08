@@ -52,7 +52,7 @@ export const TabPanel = styled(TabPanelUnstyled)`
 
 export const TabList = styled(TabsListUnstyled)`
   min-width: 320px;
-  background-color: #333232;
+  background-color: #363636;
   border-radius: ${radius};
   display: flex;
   align-items: center;

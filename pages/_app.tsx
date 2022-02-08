@@ -1,20 +1,9 @@
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Config, DAppProvider, Fantom } from '@usedapp/core';
+import { ThemeProvider } from '@mui/material/styles';
+import { DAppProvider } from '@usedapp/core';
 import type { AppProps } from 'next/app';
 import '../styles/globals.css';
-
-
-const config: Config = {
-  networks: [Fantom]
-}
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#FC542B',
-    },
-  }
-});
+import { config } from '../utils/networkConfig';
+import { theme } from '../utils/theme';
 
 
 function MyApp({ Component, pageProps }: AppProps) {

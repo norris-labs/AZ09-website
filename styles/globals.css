@@ -1,10 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400&display=swap");
+@import url("./pagination.css");
 
 html,
 body {
   padding: 0;
   margin: 0;
-  background: black;
+  background: #141414;
   color: white;
   font-family: "Inconsolata", monospace;
 }
@@ -29,81 +30,6 @@ img {
 
   /* Safari seems to support, but seems deprecated and does the same thing as the others. */
   image-rendering: -webkit-optimize-contrast;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  list-style: none;
-}
-
-.pagination-page-link {
-  align-content: center;
-  align-items: center;
-  background: #333;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  font-size: 30px;
-  height: 60px;
-  justify-content: center;
-  margin-right: 9px;
-  padding: 15px;
-  width: 60px;
-}
-
-.previous a,
-.next a {
-  align-content: center;
-  align-items: center;
-  background: white;
-  border-radius: 10px;
-  color: black;
-  cursor: pointer;
-  display: flex;
-  font-size: 30px;
-  height: 60px;
-  justify-content: center;
-  margin-right: 9px;
-  padding: 15px;
-  width: 60px;
-}
-
-.previous a:hover,
-.next a:hover {
-  opacity: 0.75;
-}
-
-.previous.disabled,
-.next.disabled,
-.previous.disabled:hover,
-.next.disabled:hover {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.selected .pagination-page-link,
-.selected .pagination-page-link:hover {
-  background: #ff3c00;
-  color: black;
-}
-
-.pagination-page-link:hover {
-  background: rgb(68, 68, 68);
-}
-
-.break {
-  padding: 9px;
-  display: flex;
-  align-content: center;
-  margin-right: 9px;
-  justify-content: center;
-}
-
-.pagination-wrapper {
-  padding-top: 50px;
-  padding-bottom: 150px;
 }
 
 .blockie {

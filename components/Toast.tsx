@@ -1,48 +1,53 @@
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import { TransactionState } from "@usedapp/core";
 import * as React from "react";
 import { memo } from "react";
 
-export type ToastState = {
-  msg: string | null;
-  level: TransactionState;
+const txStateToToastMap: Record<TransactionState, AlertColor> = {
+  Success: "success",
+  PendingSignature: "info",
+  Exception: "error",
+  Fail: "error",
+  None: "info",
+  Mining: "info",
 };
 
-type ToastProps = {
-  toastState: ToastState;
-  setToastState: (state: ToastState | null) => void;
+type ToastComponentProps = {
+  toastType?: TransactionState;
+  toastMessage?: string;
+  closeToast: () => void;
 };
 
-function ToastComponent({ toastState, setToastState }: ToastProps) {
-  if (!toastState) return null;
-  if ("msg" in toastState) return null;
-  if ("level" in toastState) return null;
-  const show = !!toastState.msg;
+function ToastComponent({
+  toastMessage,
+  toastType,
+  closeToast,
+}: ToastComponentProps) {
+  if (toastType === "None" || !toastType) {
+    return null;
+  }
 
   return (
     <Snackbar
-      open={show}
+      open={true}
       autoHideDuration={6000}
-      onClose={() => setToastState(null)}
+      onClose={() => closeToast()}
       message={"toastMessage"}
       anchorOrigin={{
         vertical: "top",
         horizontal: "right",
       }}
     >
-      {/* toastState.level */}
       <Alert
-        onClose={() => setToastState(null)}
-        //@ts-ignore
-        severity={toastState.level}
+        onClose={() => closeToast()}
+        severity={txStateToToastMap[toastType]}
         sx={{
           width: "100%",
           fontSize: "1.1rem",
         }}
       >
-        {/* {mintTxState.status} */}
-        {JSON.stringify(toastState)}
+        {toastMessage}
       </Alert>
     </Snackbar>
   );
@@ -56,9 +61,3 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export const Toast = memo(ToastComponent);
-
-// const messageMap = {
-//   "insufficient balance for transfer": true,
-//   None: false,
-//   "Connect wallet first before minting": true,
-// };
