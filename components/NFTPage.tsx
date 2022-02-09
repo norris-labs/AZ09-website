@@ -37,7 +37,7 @@ function NFTPageComponent({
         );
 
         return (
-          <Grid item xs={6} sm={4} md={4} lg={3} key={item.dna}>
+          <Grid item xs={6} sm={6} md={4} lg={3} key={item.dna}>
             <Card className="nft-item">
               <CardContent sx={{ borderRadius: 0 }}>
                 <CardMedia

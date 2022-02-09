@@ -20,6 +20,7 @@ export const Tab = styled(TabUnstyled)`
   font-size: 1.45rem;
   font-weight: bold;
   background-color: transparent;
+  white-space: nowrap;
   width: 100%;
   border-radius: ${radius};
   padding: 20px;
@@ -27,11 +28,11 @@ export const Tab = styled(TabUnstyled)`
   display: flex;
   justify-content: center;
   outline: none;
-
-  &:focus {
-    color: #fff;
-    outline: none;
-    outline-offset: 2px;
+  color: #fff;
+  outline: none;
+  outline-offset: 2px;
+  @media (max-width: 599.95px) {
+    font-size: 1.1rem;
   }
 
   &.${tabUnstyledClasses.selected} {

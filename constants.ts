@@ -14,3 +14,5 @@ export enum EditionNames {
 export const ITEMS_PER_PAGE = 30;
 
 export const API_URL = "/api/nfts";
+
+export const BREAKPOINTS = { mobile: 0, tablet: 768, desktop: 1280 };

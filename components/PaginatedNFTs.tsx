@@ -1,16 +1,13 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { TransactionStatus } from "@usedapp/core";
+import useBreakpoint from "use-breakpoint";
 import axios from "axios";
 import React, { memo, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { API_URL } from "../constants";
+import { API_URL, BREAKPOINTS } from "../constants";
 import { NFTPage } from "./NFTPage";
 import { SearchBox } from "./SearchBox";
-
-// function pushURLHash() {
-//   window.location.que
-// }
 
 type PaginatedNFTsProps = {
   activeMintId: number | null;
@@ -19,6 +16,12 @@ type PaginatedNFTsProps = {
   editionName: string;
   setActiveMintId: (id: number) => void;
   txState: TransactionStatus;
+};
+
+const breakpointMap = {
+  mobile: 1,
+  tablet: 2,
+  desktop: 4,
 };
 
 function scrollUp(): void {
@@ -41,6 +44,8 @@ function PaginatedNFTsComponent({
   const [pageNum, setPageNum] = useState(0);
   const [pageNumDisplay, setPageNumDisplay] = useState(1);
   const [searchTerm, setsearchTerm] = useState<string>("");
+
+  const { breakpoint } = useBreakpoint(BREAKPOINTS, "desktop");
 
   useEffect(() => {
     const body = {
@@ -96,10 +101,14 @@ function PaginatedNFTsComponent({
           py: 4,
           display: "flex",
           justifyContent: "space-between",
+          "@media (max-width: 599.95px)": {
+            pt: 1,
+            pb: 4,
+          },
         }}
       >
         <Grid container>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <Box
               sx={{
                 height: "100%",
@@ -109,6 +118,9 @@ function PaginatedNFTsComponent({
                 alignItems: "center",
                 alignContent: "center",
                 justifyContent: "space-between",
+                "@media (max-width: 599.95px)": {
+                  pb: 3,
+                },
               }}
             >
               <Box>
@@ -126,7 +138,7 @@ function PaginatedNFTsComponent({
               )}
             </Box>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <Box sx={{ display: "flex" }}>
               <SearchBox
                 onChange={(inputStr) => {
@@ -169,6 +181,8 @@ function PaginatedNFTsComponent({
               onPageChange={(e) => handlePageChange(e.selected)}
               pageCount={pageCount}
               previousLabel="&larr;"
+              pageRangeDisplayed={breakpointMap[breakpoint]}
+              marginPagesDisplayed={breakpointMap[breakpoint]}
               pageLinkClassName="pagination-page-link"
               className="pagination-container"
             />
