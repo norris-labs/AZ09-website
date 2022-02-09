@@ -117,6 +117,10 @@ const Home: NextPage = () => {
     return mintedTokenIDs.includes(tokenID);
   }, [mintedTokenIDs])
 
+
+  console.log({
+    error
+  })
   return (
     <div>
       <Head>

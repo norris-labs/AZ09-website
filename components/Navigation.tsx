@@ -1,9 +1,22 @@
-import { Button } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import Blockies from "react-blockies";
 import truncateEthAddress from "truncate-eth-address";
 import { theme } from "../utils/theme";
 import { Fantom, ChainId } from "@usedapp/core";
+
+declare let window: any;
+
+const GreyButton = styled(Button)`
+  background: #333232;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: white;
+  &:hover {
+    background: #555555;
+  }
+`;
 
 type NavigationProps = {
   account?: string | null;
@@ -45,21 +58,10 @@ function ConnectedWalletButton({
   }
 
   return (
-    <Button
-      sx={{
-        background: "#333232",
-        border: "none",
-        padding: "10px 15px",
-        fontSize: "1rem",
-        color: "white",
-        "&:hover": {
-          background: "#555555",
-        },
-      }}
-    >
+    <GreyButton>
       <Blockies size={6} className="blockie" seed={account} />
       {truncateEthAddress(account)}
-    </Button>
+    </GreyButton>
   );
 }
 
@@ -68,23 +70,7 @@ function DisconnectedWalletButton({
 }: {
   handleWalletConnect: () => void;
 }) {
-  return (
-    <Button
-      onClick={handleWalletConnect}
-      sx={{
-        background: theme.palette.primary.main,
-        border: "none",
-        padding: "10px 15px",
-        fontSize: "1rem",
-        color: "black",
-        "&:hover": {
-          background: theme.palette.primary.main,
-        },
-      }}
-    >
-      Connect Wallet
-    </Button>
-  );
+  return <GreyButton>Connect Wallet</GreyButton>;
 }
 
 export function Navigation({
@@ -93,6 +79,10 @@ export function Navigation({
   activateBrowserWallet,
 }: NavigationProps) {
   async function connectWallet() {
+    if (!window.ethereum) {
+      alert("no injected wallet detected");
+      return;
+    }
     await activateBrowserWallet();
   }
 

@@ -22,29 +22,40 @@ function isNumber(item: any) {
 
 function findStringStart(items: NFTMetaData[]) {
   for (let i = 0; i < items.length; i++) {
-    // let foundLetterStart = false;
-    // if (foundLetterStart === false)
     const [left, right] = items[i].attrString.split("");
 
     if (isNumber(left) || isNumber(right)) {
       continue;
     } else {
-      // foundLetterStart = true;
       return i;
     }
   }
 }
 
-function lettersFirst(items: NFTMetaData[]) {
-  const letterStartIndex = findStringStart(items);
-  const numbers = items.slice(0, letterStartIndex);
-  const letters = items.slice(letterStartIndex);
-  return [...letters.sort(), ...numbers.sort()];
+function sortLeadingNumberLast(collection: NFTMetaData[]) {
+  const leaderNumberItems: NFTMetaData[] = [];
+  const alphaLeadingItems: NFTMetaData[] = [];
+
+  collection.forEach((item: NFTMetaData) => {
+    const LeftTrait = item.attributes.find(
+      (attr) => attr.trait_type === "Left"
+    );
+
+    if (LeftTrait && isNumber(LeftTrait.value)) {
+      leaderNumberItems.push(item);
+    } else {
+      alphaLeadingItems.push(item);
+    }
+  });
+
+  return [...alphaLeadingItems, ...leaderNumberItems];
 }
 
 export function MetaDataCleaner(_metadata: Omit<NFTMetaData, "attrString">[]) {
   const metadataSorted: NFTMetaData[] = _metadata
     .map(combineAttr)
     .sort(sortABC);
-  return lettersFirst(metadataSorted);
+
+  const sortedAlphaFirst = sortLeadingNumberLast(metadataSorted);
+  return sortedAlphaFirst;
 }
