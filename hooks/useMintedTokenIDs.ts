@@ -1,19 +1,30 @@
-import { BigNumber, ethers } from 'ethers';
-
+import AZ09DarkABI from '../abi/AZ09-dark-abi.json';
 import AZ09LightABI from '../abi/AZ09-light-abi.json';
-import { useContractCall } from '@usedapp/core';
+import { EditionNames as editionNamesEnum } from '../constants';
+import { useContractRead } from 'wagmi';
 
-const simpleContractInterface = new ethers.utils.Interface(AZ09LightABI);
+export function useMintedTokenIDs(editionName: string) {
+  let address;
+  let abi;
 
-export function useMintedTokenIDs() {
-  const [mintedTokenIDs]: Array<BigNumber>[] =
-    useContractCall({
-      abi: simpleContractInterface,
-      address: process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS as string,
-      method: 'getMintedTokenIDs',
-      args: [],
-    }) ?? [];
+  if (editionName === editionNamesEnum.Dark) {
+    address = process.env.NEXT_PUBLIC_DARK_CONTRACT_ADDRESS as string;
+    abi = AZ09DarkABI;
+  } else {
+    address = process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS as string;
+    abi = AZ09LightABI;
+  }
 
-  if (!mintedTokenIDs || mintedTokenIDs.length == 0) return [];
-  return mintedTokenIDs.map((bigNum: BigNumber) => bigNum.toNumber());
+  const { data, loading, error } = useContractRead(
+    {
+      addressOrName: address,
+      contractInterface: abi,
+    },
+    'getMintedTokenIDs',
+    {
+      watch: true,
+    }
+  );
+
+  if (!data) return;
 }

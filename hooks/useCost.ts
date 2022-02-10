@@ -1,17 +1,23 @@
-import { useContractCall } from "@usedapp/core";
-import { ethers } from "ethers";
 import AZ09LightABI from "../abi/AZ09-light-abi.json";
-
-const simpleContractInterface = new ethers.utils.Interface(AZ09LightABI);
+import { useContractRead } from "wagmi";
+import { utils } from "ethers";
+import { useEffect, useState } from "react";
 
 export function useCost() {
-  const [NFTCost]: any =
-    useContractCall({
-      abi: simpleContractInterface,
-      address: process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS as string,
-      method: "cost",
-      args: [],
-    }) ?? [];
+  const [cost, setCost] = useState<string>();
 
-  return NFTCost;
+  const [{ data, error, loading }, read] = useContractRead(
+    {
+      addressOrName: process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS as string,
+      contractInterface: AZ09LightABI,
+    },
+    "cost"
+  );
+
+  useEffect(() => {
+    if (!data) return;
+    setCost(utils.formatEther(data));
+  }, [loading]);
+
+  return cost;
 }

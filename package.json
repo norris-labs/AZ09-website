@@ -19,6 +19,7 @@
     "@usedapp/core": "^0.10.1",
     "axios": "^0.25.0",
     "debounce": "^1.2.1",
+    "ethers": "^5.5.4",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "lodash.filter": "^4.6.0",
@@ -29,7 +30,8 @@
     "react-paginate": "^8.1.0",
     "truncate-eth-address": "^1.0.2",
     "tslint-config-airbnb": "^5.11.2",
-    "use-breakpoint": "^3.0.1"
+    "use-breakpoint": "^3.0.1",
+    "wagmi": "^0.2.9"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.178",

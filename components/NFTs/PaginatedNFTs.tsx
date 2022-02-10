@@ -5,17 +5,17 @@ import useBreakpoint from "use-breakpoint";
 import axios from "axios";
 import React, { memo, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { API_URL, BREAKPOINTS } from "../constants";
-import { NFTPage } from "./NFTPage";
-import { SearchBox } from "./SearchBox";
+import { API_URL, BREAKPOINTS } from "../../constants";
+import { NFTList } from "./NFTList";
+import { SearchBox } from "../UI/SearchBox";
 
 type PaginatedNFTsProps = {
   activeMintId: number | null;
-  cost: string | number;
+  cost: string | undefined;
   isNFTMinted: (id: number) => boolean;
   editionName: string;
   setActiveMintId: (id: number) => void;
-  txState: TransactionStatus;
+  txState?: TransactionStatus;
 };
 
 const breakpointMap = {
@@ -124,7 +124,13 @@ function PaginatedNFTsComponent({
               }}
             >
               <Box>
-                Page — {pageNumDisplay} / {pageCount}
+                Page — {pageNumDisplay} / {pageCount} <br />
+                cost : {cost}
+                {/* <br />
+                loading: {JSON.stringify(loading)}
+                <br />
+                error: {JSON.stringify(error)}
+                <br /> */}
               </Box>
               {searchTerm && (
                 <Box
@@ -165,7 +171,7 @@ function PaginatedNFTsComponent({
         </Box>
       ) : (
         <>
-          <NFTPage
+          <NFTList
             NFTCollection={pageResults}
             activeMintId={activeMintId}
             cost={cost}
