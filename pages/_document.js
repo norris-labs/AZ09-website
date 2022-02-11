@@ -1,6 +1,8 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import * as React from "react";
-import { renderStatic } from "../utils/renderer";
+import * as React from 'react';
+
+import Document, { Head, Html, Main, NextScript } from 'next/document';
+
+import { renderStatic } from '../utils/renderer';
 
 export default class AppDocument extends Document {
   static async getInitialProps(ctx) {
@@ -13,7 +15,7 @@ export default class AppDocument extends Document {
         <React.Fragment>
           {initialProps.styles}
           <style
-            data-emotion={`css ${ids.join(" ")}`}
+            data-emotion={`css ${ids.join(' ')}`}
             dangerouslySetInnerHTML={{ __html: css }}
           />
         </React.Fragment>

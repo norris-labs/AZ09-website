@@ -1,5 +1,5 @@
-import { metadata as metadataDark } from "./utils/metadata_dark";
-import { metadata as metadataLight } from "./utils/metadata_light";
+import { metadata as metadataDark } from './data/metadata_dark';
+import { metadata as metadataLight } from './data/metadata_light';
 
 export const EDITIONS = {
   dark: metadataDark,
@@ -7,12 +7,12 @@ export const EDITIONS = {
 };
 
 export enum EditionNames {
-  Dark = "dark",
-  Light = "light",
+  Dark = 'dark',
+  Light = 'light',
 }
 
 export const ITEMS_PER_PAGE = 30;
 
-export const API_URL = "/api/nfts";
+export const API_URL = '/api/nfts';
 
 export const BREAKPOINTS = { mobile: 0, tablet: 768, desktop: 1280 };

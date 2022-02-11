@@ -1,184 +1,143 @@
-import { Container, Link, Typography } from '@mui/material';
-import * as React from 'react';
+import { Account, Connect, NetworkSwitcher } from '../components/Navigation'
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Tab,
+  TabChicklet,
+  TabContainer,
+  TabList,
+  TabPanel,
+} from "../components/UI/Tabs/Tabs.styles";
+import { useCost, useMint, useMintedTokenIDs } from '../hooks'
+import {Toast} from '../components/UI/Toast'
 import Box from "@mui/material/Box";
-import { useEthers, TransactionState } from '@usedapp/core';
-import { utils } from 'ethers';
-import type { NextPage } from 'next';
-import { Fantom } from "@usedapp/core";
-import Head from 'next/head';
-import { capitalize } from "@mui/material";
-import { memo, useCallback, useEffect, useState } from 'react';
-import { App } from '../components/App';
-import { Navigation } from '../components/Navigation';
-import { Toast } from '../components/Toast';
-import { useCost } from "../hooks/useCost";
+import { Container } from '@mui/material';
 import { EditionNames } from '../constants'
-import { useMint } from "../hooks/useMint";
-import { useMintedTokenIDs } from "../hooks/useMintedTokenIDs";
+import { Header } from '../components/UI/Header'
+import type { NextPage } from 'next';
+import { PaginatedNFTs } from '../components/NFTs/PaginatedNFTs'
+import { useAccount, useNetwork } from 'wagmi'
 
 enum Copy {
-  connectWallet = 'Connect wallet before minting',
-  switchChain = 'Switch to Fantom Chain before minting',
-  mintError = 'There was an error minting NFT, try again',
-  unknownError = 'There has been an unknown error, try again',
+  Tab1 = 'Dark Edition',
+  Tab2 = 'Light Edition',
 }
 
-export enum TXStates {
-  None = "None",
-  PendingSignature = "PendingSignature",
-  Mining = "Mining",
-  Success = "Success",
-  Fail = "Fail",
-  Exception = "Exception",
-}
-
-const Home: NextPage = () => {
-  const {
-    activateBrowserWallet,
-    chainId,
-    account,
-    error
-  } = useEthers();
+const Index: NextPage = () => {
+  const [toastIsClosed, toggleToast] = useState(false);
+  const [selectedEditionName, setSelectedEditionName] = useState<'light'|'dark'>('dark');
   const [currentTab, setCurrentTab] = useState<number>(0)
-  const cost: number = useCost()
-  const mintedTokenIDs = useMintedTokenIDs()
-  const [toastType, setToastType] = useState<TransactionState|null>();
-  const [toastMessage, setToastMessage] = useState<string|null>();
-  const [editionName, setEditionName] = useState<'light'|'dark'>('dark');
-  const [activeMintId, setActiveMintId] = useState<null|number>(null);
-  const {state: mintTxState, send: sendMintTx} = useMint(editionName);
-
-  useEffect(() => {
-    let focusedEdition;
-
-    if (currentTab === 0) {
-      focusedEdition = EditionNames.Light
-    } else {
-      focusedEdition = EditionNames.Dark
-    }
-
-    setEditionName(focusedEdition)
-  }, [currentTab])
-
-  useEffect(() => {
-    if (mintTxState.status === "None" || mintTxState.status === "Exception") {
-      setActiveMintId(null);
-    }
-  }, [activeMintId])
-
-  const closeToast = useCallback(() => {
-    setToastMessage(null);
-    setToastType(null);
-  }, []);
-
-  useEffect(() => {
-    if (
-      mintTxState.status === 'Exception' ||
-      mintTxState.status === 'Fail' ||
-      mintTxState.status === 'Success' ||
-      mintTxState.status === 'Mining') {
-        if (!mintTxState.errorMessage) {
-          setToastMessage(Copy.unknownError);
-          return;
-        }
-        setToastMessage(capitalize(mintTxState.errorMessage));
-        setToastType(mintTxState.status);
-    }
-  }, [mintTxState.status])
+  const [activeMintId, setActiveMintId] = useState<number|null>(null)
+  const cost = useCost();
+  const {mintedTokenIDs} = useMintedTokenIDs(selectedEditionName);
+  const [{data: accountData}] = useAccount()
+  const {mintData, mintError, mintLoading, mintNFT} = useMint({editionName: selectedEditionName, cost})
+  const [networkData, _] = useNetwork();
 
   useEffect(() => {
     if (!activeMintId) return;
-    if (!account) {
-      setToastType('Exception');
-      setToastMessage(Copy.connectWallet);
-      return;
-    }
-    if (Fantom.chainId !== chainId) {
-      setToastType('Exception');
-      setToastMessage(Copy.switchChain);
-      return;
-    }
-    handleNFTMint();
+
+    mintNFT(activeMintId)
   }, [activeMintId])
 
-  const handleNFTMint = useCallback(() => {
-    try {
-      sendMintTx(activeMintId, {
-        value: cost
-      });
-    } catch(e) {
-      setToastType('Exception');
-      setToastMessage(Copy.mintError);
-    }
-  }, [activeMintId])
+  useEffect(() => {
+    if (mintLoading) return;
 
+    setActiveMintId(null)
+  }, [mintLoading])
+
+
+  const selectTab = useCallback((tabName: 'dark'|'light') => {
+    setSelectedEditionName(tabName)
+    setCurrentTab(tabName === 'dark' ? 0 : 1);
+  }, []);
 
   const isNFTMinted = useCallback((tokenID: number) => {
     return mintedTokenIDs.includes(tokenID);
   }, [mintedTokenIDs])
 
-
-  console.log({
-    error
-  })
   return (
-    <div>
-      <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <Container fixed maxWidth="xl">
+      <Toast
+        toggleToast={toggleToast}
+        toastIsClosed={toastIsClosed}
+        mintError={mintError}
+        mintLoading={mintLoading}
+      />
+      <Box
+        sx={{
+          mt: 5,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+        }}
+      >
+      {accountData?.address ?
+        <>
+          {networkData?.data?.chain?.unsupported ?
+            <NetworkSwitcher />
+            :
+            <Account />
+          }
+        </>
+        :
+        <Connect />
+      }
+      </Box>
+      <Box sx={{mb: 4}}>
+        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/>
+        selectedEditionName: {selectedEditionName}<br/>
+        mintError: {JSON.stringify(mintError)}<br/>
+        mintData: {JSON.stringify(mintData)}<br/>
+        activeMintId: {JSON.stringify(activeMintId)}<br/>
+        currentTab: {currentTab}<br/>
+        NEXT_PUBLIC_CHAIN_ID: {Number(process.env.NEXT_PUBLIC_CHAIN_ID)}<br/>
+        mintLoading: {JSON.stringify(mintLoading)}<br/>
+        cost : {cost}
+      </Box>
+      {/* <Header /> */}
 
-      <Container fixed maxWidth="xl">
-        <Navigation
-          account={account}
-          chainId={chainId}
-          activateBrowserWallet={activateBrowserWallet}
-        />
-        <Box sx={{
-          my: 10
-        }}>
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              lineHeight: '2.5rem',
-              '@media (max-width: 599.95px)': {
-                fontSize: '1.75rem',
-                lineHeight: '2.35rem',
-              }
-            }}
-          >
-            AZ09 is a collection of 2,592 unique, programmatically generated monogram <b><Link target="_blank" href="https://ethereum.org/en/nft/">NFTs</Link></b> on the <b><Link target="_blank" href="https://fantom.foundation/">Fantom network</Link></b>. All Monograms contain two (hand drawn) characters from the permutations of A-Z and 0-9. No two monograms are alike. Comes in two variations: Dark and Light.
-          </Typography>
-        </Box>
-        <App
-          activeMintId={activeMintId}
-          cost={cost ? utils.formatEther(cost) : 0}
-          editionName={editionName}
-          currentTab={currentTab}
-          isNFTMinted={isNFTMinted}
-          setActiveMintId={setActiveMintId}
-          setCurrentTab={setCurrentTab}
-          txState={mintTxState}
-        />
+      <TabContainer defaultValue={0} id="tab-container">
+        <TabList>
+          <Tab onChange={() => selectTab(EditionNames.Dark)}>
+            <TabChicklet tabNum={0} currentTab={currentTab}>
+              1
+            </TabChicklet>
+            {Copy.Tab1}
+          </Tab>
+          <Tab onChange={() => selectTab(EditionNames.Light)}>
+            <TabChicklet tabNum={1} currentTab={currentTab}>
+              2
+            </TabChicklet>
+            {Copy.Tab2}
+          </Tab>
+        </TabList>
 
-        mintTxState: {JSON.stringify(mintTxState)}
-        error: {JSON.stringify(error)}
-        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)}
-        {process.env.NEXT_PUBLIC_CHAIN_ID}
-
-        {toastMessage && toastType &&
-          <Toast
-            toastMessage={toastMessage}
-            toastType={toastType}
-            closeToast={closeToast}
+        <TabPanel value={0}>
+          <PaginatedNFTs
+            cost={cost}
+            mintLoading={mintLoading}
+            isNFTMinted={isNFTMinted}
+            activeMintId={activeMintId}
+            selectedEditionName={selectedEditionName}
+            setActiveMintId={setActiveMintId}
+            editionName={'dark'}
           />
-        }
+        </TabPanel>
 
-      </Container>
-    </div>
+        <TabPanel value={1}>
+          <PaginatedNFTs
+            cost={cost}
+            mintLoading={mintLoading}
+            isNFTMinted={isNFTMinted}
+            activeMintId={activeMintId}
+            selectedEditionName={selectedEditionName}
+            setActiveMintId={setActiveMintId}
+            editionName={'light'}
+          />
+        </TabPanel>
+      </TabContainer>
+    </Container>
   )
 }
 
-export default memo(Home)
+export default Index;

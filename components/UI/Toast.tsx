@@ -1,38 +1,26 @@
 import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-import { TransactionState } from "@usedapp/core";
 import * as React from "react";
 import { memo } from "react";
 
-const txStateToToastMap: Record<TransactionState, AlertColor> = {
-  Success: "success",
-  PendingSignature: "info",
-  Exception: "error",
-  Fail: "error",
-  None: "info",
-  Mining: "info",
-};
-
 type ToastComponentProps = {
-  toastType?: TransactionState;
-  toastMessage?: string;
-  closeToast: () => void;
+  mintError?: any;
+  mintLoading?: boolean;
+  toastIsClosed?: boolean;
+  toggleToast: (state: boolean) => void;
 };
 
 function ToastComponent({
-  toastMessage,
-  toastType,
-  closeToast,
+  mintLoading,
+  mintError,
+  toggleToast,
+  toastIsClosed,
 }: ToastComponentProps) {
-  if (toastType === "None" || !toastType) {
-    return null;
-  }
-
   return (
     <Snackbar
-      open={true}
+      open={toastIsClosed}
       autoHideDuration={6000}
-      onClose={() => closeToast()}
+      onClose={() => toggleToast(false)}
       message={"toastMessage"}
       anchorOrigin={{
         vertical: "top",
@@ -40,14 +28,13 @@ function ToastComponent({
       }}
     >
       <Alert
-        onClose={() => closeToast()}
-        severity={txStateToToastMap[toastType]}
+        severity="success"
         sx={{
           width: "100%",
           fontSize: "1.1rem",
         }}
       >
-        {toastMessage}
+        Yoooo!
       </Alert>
     </Snackbar>
   );
@@ -61,3 +48,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export const Toast = memo(ToastComponent);
+
+// const txStateToToastMap: Record<TransactionState, AlertColor> = {
+//   Success: "success",
+//   PendingSignature: "info",
+//   Exception: "error",
+//   Fail: "error",
+//   None: "info",
+//   Mining: "info",
+// };
