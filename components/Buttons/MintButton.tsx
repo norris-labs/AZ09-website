@@ -1,43 +1,60 @@
 import * as React from "react";
-import { TransactionStatus } from "@usedapp/core";
+
 import { memo, useCallback } from "react";
-import { LoadingButton } from "./LoadingButton";
-import { LinkButton } from "./LinkButton";
+
 import { ActionButton } from "./ActionButton";
+import { LinkButton } from "./LinkButton";
+import { LoadingButton } from "./LoadingButton";
+
+enum Copy {
+  AlreadyMinted = "View on PaintSwap",
+  Mint = "Mint",
+}
 
 type MintButtonProps = {
-  txState: TransactionStatus;
-  edition: number;
+  mintLoading: boolean | undefined;
+  id: number;
+  selectedEditionName: string;
   setActiveMintId: (id: number) => void;
   activeMintId: number | null;
   isNFTMinted: (id: number) => boolean;
 };
 
 function MintButtonComponent({
-  edition,
-  txState,
+  id,
+  mintLoading,
   setActiveMintId,
   isNFTMinted,
   activeMintId,
+  selectedEditionName,
 }: MintButtonProps) {
   const handleMintBtnClick = useCallback(() => {
-    setActiveMintId(edition);
-  }, [edition]);
+    setActiveMintId(id);
+  }, [id]);
 
-  if (txState?.status === "PendingSignature" && activeMintId === edition) {
+  if (mintLoading && activeMintId === id) {
     return <LoadingButton />;
   }
-  debugger;
-  return isNFTMinted(edition) ? (
+
+  const contractAddress =
+    selectedEditionName === "dark"
+      ? process.env.NEXT_PUBLIC_DARK_CONTRACT_ADDRESS
+      : process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS;
+
+  return isNFTMinted(id) ? (
     <LinkButton
-      href={`${process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}/${edition}`}
+      href={`${process.env.NEXT_PUBLIC_PAINTSWAP_COLLECTION_URL}/${contractAddress}/${id}`}
       target="_blank"
     >
-      View on PaintSwap
+      {Copy.AlreadyMinted}
     </LinkButton>
   ) : (
-    <ActionButton variant="contained" onClick={handleMintBtnClick}>
-      {process.env.NEXT_PUBLIC_USE_SUDO_MINT ? "Sudo Mint" : "Mint"}
+    <ActionButton
+      disableRipple
+      variant="contained"
+      onClick={handleMintBtnClick}
+    >
+      {Copy.Mint}
     </ActionButton>
   );
 }

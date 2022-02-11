@@ -4,7 +4,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
-import { TransactionStatus } from "@usedapp/core";
 import Image from "next/image";
 import { memo } from "react";
 import { MintButton } from "../Buttons/MintButton";
@@ -13,19 +12,21 @@ import { TocDisplay } from "../UI/TocDisplay";
 type NFTProps = {
   item: NFTMetaData;
   activeMintId: number | null;
-  cost: string | number;
+  selectedEditionName: string;
+  cost: string | undefined;
   isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
-  txState: TransactionStatus;
+  mintLoading: boolean | undefined;
 };
 
 function NFTComponent({
   item,
   activeMintId,
   cost,
+  selectedEditionName,
   isNFTMinted,
   setActiveMintId,
-  txState,
+  mintLoading,
 }: NFTProps) {
   const [, leftCharacter, rightCharacter] = item.attributes.map(
     (attribute) => attribute.value
@@ -59,14 +60,15 @@ function NFTComponent({
               <TocDisplay first="Character Right" second={rightCharacter} />
               <TocDisplay
                 first="Cost"
-                second={`${cost === 0 ? "?" : cost} FTM`}
+                second={`${Number(cost) === 0 ? "?" : cost} FTM`}
               />
             </span>
           </Box>
           <MintButton
+            selectedEditionName={selectedEditionName}
             activeMintId={activeMintId}
-            edition={item.edition}
-            txState={txState}
+            id={item.edition}
+            mintLoading={mintLoading}
             setActiveMintId={setActiveMintId}
             isNFTMinted={isNFTMinted}
           />

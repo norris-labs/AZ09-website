@@ -1,3 +1,8 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "sort-keys": [
+    "error",
+    "asc",
+    { "caseSensitive": true, "natural": false, "minKeys": 2 }
+  ]
 }

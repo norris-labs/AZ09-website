@@ -1,24 +1,25 @@
 import Grid from "@mui/material/Grid";
-import { TransactionStatus } from "@usedapp/core";
-import { memo } from "react";
 import { NFT } from "./NFT";
+import { memo } from "react";
 
 type NFTListProps = {
   NFTCollection: NFTMetaData[] | [];
   activeMintId: number | null;
-  cost: string | number;
+  cost: string | undefined;
+  selectedEditionName: string;
   isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
-  txState: TransactionStatus;
+  mintLoading: boolean | undefined;
 };
 
 function NFTListComponent({
   NFTCollection,
   activeMintId,
   cost,
+  selectedEditionName,
   isNFTMinted,
   setActiveMintId,
-  txState,
+  mintLoading,
 }: NFTListProps) {
   if (!NFTCollection) return null;
 
@@ -27,12 +28,14 @@ function NFTListComponent({
       {NFTCollection.map((item) => {
         return (
           <NFT
+            key={item.edition}
+            selectedEditionName={selectedEditionName}
             item={item}
             activeMintId={activeMintId}
             cost={cost}
             isNFTMinted={isNFTMinted}
             setActiveMintId={setActiveMintId}
-            txState={txState}
+            mintLoading={mintLoading}
           />
         );
       })}

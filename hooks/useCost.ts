@@ -1,7 +1,8 @@
-import AZ09LightABI from "../abi/AZ09-light-abi.json";
-import { useContractRead } from "wagmi";
-import { utils } from "ethers";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+
+import AZ09LightABI from '../abi/AZ09-light-abi.json';
+import { useContractRead } from 'wagmi';
+import { utils } from 'ethers';
 
 export function useCost() {
   const [cost, setCost] = useState<string>();
@@ -11,7 +12,7 @@ export function useCost() {
       addressOrName: process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS as string,
       contractInterface: AZ09LightABI,
     },
-    "cost"
+    'cost'
   );
 
   useEffect(() => {

@@ -1,6 +1,7 @@
-import { Button, css } from "@mui/material";
-import { styled } from "@mui/system";
-import { theme } from "../utils/theme";
+import { Button, css } from '@mui/material';
+
+import { styled } from '@mui/system';
+import { theme } from '../config';
 
 export const ButtonBase = css`
   width: 100%;
@@ -11,7 +12,7 @@ export const ButtonBase = css`
   font-size: 1.25rem;
   min-height: 47px;
   font-weight: 700;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   text-decoration: none;
   text-transform: uppercase;
   &:hover,

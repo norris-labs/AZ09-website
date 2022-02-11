@@ -1,9 +1,13 @@
+import { useEffect, useState } from 'react';
+
 import AZ09DarkABI from '../abi/AZ09-dark-abi.json';
 import AZ09LightABI from '../abi/AZ09-light-abi.json';
+import { BigNumber } from 'ethers';
 import { EditionNames as editionNamesEnum } from '../constants';
 import { useContractRead } from 'wagmi';
 
 export function useMintedTokenIDs(editionName: string) {
+  const [mintedTokenIds, setMintedTokenIds] = useState<number[]>([]);
   let address;
   let abi;
 
@@ -15,7 +19,7 @@ export function useMintedTokenIDs(editionName: string) {
     abi = AZ09LightABI;
   }
 
-  const { data, loading, error } = useContractRead(
+  const [{ data, error, loading }, read] = useContractRead(
     {
       addressOrName: address,
       contractInterface: abi,
@@ -26,5 +30,12 @@ export function useMintedTokenIDs(editionName: string) {
     }
   );
 
-  if (!data) return;
+  useEffect(() => {
+    if (!data) return;
+
+    const newMintedIDs = data.map((id: BigNumber) => id.toNumber());
+    setMintedTokenIds(newMintedIDs);
+  }, [editionName, loading]);
+
+  return mintedTokenIds;
 }

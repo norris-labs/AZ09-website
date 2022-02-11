@@ -1,5 +1,5 @@
 import { Account, Connect, NetworkSwitcher } from '../components/Navigation'
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Tab,
   TabChicklet,
@@ -7,9 +7,8 @@ import {
   TabList,
   TabPanel,
 } from "../components/UI/Tabs/Tabs.styles";
-import { useCost, useMintedTokenIDs } from '../hooks'
+import { useCost, useMint, useMintedTokenIDs } from '../hooks'
 
-import { BigNumber } from "ethers";
 import Box from "@mui/material/Box";
 import { Container } from '@mui/material';
 import { EditionNames } from '../constants'
@@ -24,21 +23,34 @@ enum Copy {
 }
 
 const Index: NextPage = () => {
-  const [editionName, setEditionName] = useState<'light'|'dark'>('dark');
+  const [selectedEditionName, setSelectedEditionName] = useState<'light'|'dark'>('dark');
   const [currentTab, setCurrentTab] = useState<number>(0)
+  const [activeMintId, setActiveMintId] = useState<number|null>(null)
   const cost = useCost();
-  const [{data: mintedTokenIDs = []}, read] = useMintedTokenIDs(editionName);
+  const mintedTokenIDs = useMintedTokenIDs(selectedEditionName);
   const [{ data: accountData }] = useAccount()
+  const {mintData,  mintError,  mintLoading, mintNFT} = useMint({editionName: selectedEditionName, cost})
+
+  useEffect(() => {
+    if (!activeMintId) return;
+    debugger;
+
+    mintNFT(activeMintId)
+  }, [activeMintId])
+
+  useEffect(() => {
+    if (mintLoading) return;
+
+    setActiveMintId(null)
+
+  }, [mintLoading])
 
   function selectTab(tabName: 'dark'|'light') {
-    setEditionName(tabName)
+    setSelectedEditionName(tabName)
     setCurrentTab(tabName === 'dark' ? 0 : 1);
   }
 
   const isNFTMinted = useCallback((tokenID: number) => {
-    debugger;
-    const s = mintedTokenIDs;
-    console.log(s);
     return mintedTokenIDs.includes(tokenID);
   }, [mintedTokenIDs])
 
@@ -61,9 +73,14 @@ const Index: NextPage = () => {
         <Connect />
       }
       </Box>
-      mintedTokenIDs: {JSON.stringify(mintedTokenIDs.map((id: BigNumber) => id.toNumber()))} <br/>
-      editionName: {editionName}
-      <Header />
+      mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/>
+      selectedEditionName: {selectedEditionName}<br/>
+      mintError: {JSON.stringify(mintError)}<br/>
+      mintData: {JSON.stringify(mintData)}<br/>
+      activeMintId: {JSON.stringify(activeMintId)}<br/>
+      mintLoading: {JSON.stringify(mintLoading)}<br/>
+      cost : {cost}
+      {/* <Header /> */}
 
       <TabContainer defaultValue={0} id="tab-container">
         <TabList>
@@ -84,9 +101,11 @@ const Index: NextPage = () => {
         <TabPanel value={0}>
           <PaginatedNFTs
             cost={cost}
+            mintLoading={mintLoading}
             isNFTMinted={isNFTMinted}
-            activeMintId={null}
-            setActiveMintId={(id: number) => {}}
+            activeMintId={activeMintId}
+            selectedEditionName={selectedEditionName}
+            setActiveMintId={setActiveMintId}
             editionName={'dark'}
           />
         </TabPanel>
@@ -94,9 +113,11 @@ const Index: NextPage = () => {
         <TabPanel value={1}>
           <PaginatedNFTs
             cost={cost}
+            mintLoading={mintLoading}
             isNFTMinted={isNFTMinted}
-            activeMintId={null}
-            setActiveMintId={(id: number) => {}}
+            activeMintId={activeMintId}
+            selectedEditionName={selectedEditionName}
+            setActiveMintId={setActiveMintId}
             editionName={'light'}
           />
         </TabPanel>

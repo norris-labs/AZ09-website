@@ -6,15 +6,14 @@ import { ButtonBase } from "../Buttons";
 
 const CustomLoadingButton = styled(MuiLoadingButton)`
   ${ButtonBase}
+  &:disabled {
+    background: #d6d5d5;
+  }
   font-size: 1.4rem !important;
   &:hover,
   &:active,
   &:focus {
     box-shadow: none;
-  }
-
-  .Mui-disabled {
-    background: #c8c6c5;
   }
 `;
 

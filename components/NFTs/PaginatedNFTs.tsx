@@ -1,21 +1,22 @@
+import { API_URL, BREAKPOINTS } from "../../constants";
+import React, { memo, useEffect, useState } from "react";
+
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { TransactionStatus } from "@usedapp/core";
-import useBreakpoint from "use-breakpoint";
-import axios from "axios";
-import React, { memo, useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { API_URL, BREAKPOINTS } from "../../constants";
 import { NFTList } from "./NFTList";
+import ReactPaginate from "react-paginate";
 import { SearchBox } from "../UI/SearchBox";
+import axios from "axios";
+import useBreakpoint from "use-breakpoint";
 
 type PaginatedNFTsProps = {
   activeMintId: number | null;
   cost: string | undefined;
   isNFTMinted: (id: number) => boolean;
   editionName: string;
+  selectedEditionName: string;
   setActiveMintId: (id: number) => void;
-  txState?: TransactionStatus;
+  mintLoading: boolean | undefined;
 };
 
 const breakpointMap = {
@@ -31,9 +32,10 @@ function scrollUp(): void {
 function PaginatedNFTsComponent({
   cost,
   isNFTMinted,
+  selectedEditionName,
   activeMintId,
   setActiveMintId,
-  txState,
+  mintLoading,
   editionName,
 }: PaginatedNFTsProps) {
   const [pageResults, setPageResults] = useState<[] | NFTMetaData[]>([]);
@@ -125,12 +127,6 @@ function PaginatedNFTsComponent({
             >
               <Box>
                 Page — {pageNumDisplay} / {pageCount} <br />
-                cost : {cost}
-                {/* <br />
-                loading: {JSON.stringify(loading)}
-                <br />
-                error: {JSON.stringify(error)}
-                <br /> */}
               </Box>
               {searchTerm && (
                 <Box
@@ -175,9 +171,10 @@ function PaginatedNFTsComponent({
             NFTCollection={pageResults}
             activeMintId={activeMintId}
             cost={cost}
+            selectedEditionName={selectedEditionName}
             isNFTMinted={isNFTMinted}
             setActiveMintId={setActiveMintId}
-            txState={txState}
+            mintLoading={mintLoading}
           />
           <div className="pagination-wrapper">
             <ReactPaginate
