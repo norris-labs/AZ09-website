@@ -23,14 +23,22 @@ enum Copy {
 }
 
 const Index: NextPage = () => {
-  const [toastIsClosed, toggleToast] = useState(false);
+  const [toastIsOpen, openToast] = useState(false);
   const [selectedEditionName, setSelectedEditionName] = useState<'light'|'dark'>('dark');
   const [currentTab, setCurrentTab] = useState<number>(0)
   const [activeMintId, setActiveMintId] = useState<number|null>(null)
   const cost = useCost();
   const {mintedTokenIDs} = useMintedTokenIDs(selectedEditionName);
   const [{data: accountData}] = useAccount()
-  const {mintData, mintError, mintLoading, mintNFT} = useMint({editionName: selectedEditionName, cost})
+  const {
+    submissionLoading,
+    transactionLoading,
+    transactionData,
+    submissionData,
+    transactionError,
+    submissionError,
+    mintNFT
+  } = useMint({editionName: selectedEditionName, cost})
   const [networkData, _] = useNetwork();
 
   useEffect(() => {
@@ -40,10 +48,21 @@ const Index: NextPage = () => {
   }, [activeMintId])
 
   useEffect(() => {
-    if (mintLoading) return;
+    if (submissionLoading) {
+      return
+    };
 
     setActiveMintId(null)
-  }, [mintLoading])
+  }, [submissionLoading])
+
+  useEffect(() => {
+    if (transactionLoading) {
+      openToast(true);
+      return
+    };
+
+    openToast(false);
+  }, [transactionLoading])
 
 
   const selectTab = useCallback((tabName: 'dark'|'light') => {
@@ -58,10 +77,9 @@ const Index: NextPage = () => {
   return (
     <Container fixed maxWidth="xl">
       <Toast
-        toggleToast={toggleToast}
-        toastIsClosed={toastIsClosed}
-        mintError={mintError}
-        mintLoading={mintLoading}
+        openToast={openToast}
+        toastIsOpen={toastIsOpen}
+        transactionError={transactionError}
       />
       <Box
         sx={{
@@ -84,15 +102,16 @@ const Index: NextPage = () => {
       }
       </Box>
       <Box sx={{mb: 4}}>
-        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/>
-        selectedEditionName: {selectedEditionName}<br/>
-        mintError: {JSON.stringify(mintError)}<br/>
-        mintData: {JSON.stringify(mintData)}<br/>
-        activeMintId: {JSON.stringify(activeMintId)}<br/>
-        currentTab: {currentTab}<br/>
-        NEXT_PUBLIC_CHAIN_ID: {Number(process.env.NEXT_PUBLIC_CHAIN_ID)}<br/>
-        mintLoading: {JSON.stringify(mintLoading)}<br/>
-        cost : {cost}
+        {/* mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/> */}
+        {/* selectedEditionName: {selectedEditionName}<br/> */}
+        mintError: {JSON.stringify(transactionError)}<br/>
+        mintData: {JSON.stringify(transactionData)}<br/>
+        mintData: {JSON.stringify(submissionData)}<br/>
+        {/* activeMintId: {JSON.stringify(activeMintId)}<br/> */}
+        {/* currentTab: {currentTab}<br/> */}
+        {/* NEXT_PUBLIC_CHAIN_ID: {Number(process.env.NEXT_PUBLIC_CHAIN_ID)}<br/> */}
+        submissionLoading: {JSON.stringify(submissionLoading)}<br/>
+        {/* cost : {cost} */}
       </Box>
       {/* <Header /> */}
 
@@ -115,7 +134,7 @@ const Index: NextPage = () => {
         <TabPanel value={0}>
           <PaginatedNFTs
             cost={cost}
-            mintLoading={mintLoading}
+            mintLoading={submissionLoading || transactionLoading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}
@@ -127,7 +146,7 @@ const Index: NextPage = () => {
         <TabPanel value={1}>
           <PaginatedNFTs
             cost={cost}
-            mintLoading={mintLoading}
+            mintLoading={submissionLoading || transactionLoading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}

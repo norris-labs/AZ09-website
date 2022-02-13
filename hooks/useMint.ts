@@ -1,4 +1,4 @@
-import { useContractWrite } from "wagmi";
+import { useContractWrite, useWaitForTransaction } from "wagmi";
 
 import AZ09DarkABI from "../abi/AZ09-dark-abi.json";
 import AZ09LightABI from "../abi/AZ09-light-abi.json";
@@ -22,7 +22,11 @@ export function useMint({
     contractInterface: abi,
   };
 
-  const [mintState, callMint] = useContractWrite(contractConfig, "mint");
+  const [submissionState, callMint] = useContractWrite(contractConfig, "mint");
+
+  const [transactionState] = useWaitForTransaction({
+    hash: submissionState.data?.hash,
+  });
 
   function mintNFT(id: number) {
     if (!cost) return;
@@ -37,9 +41,12 @@ export function useMint({
   }
 
   return {
-    mintLoading: mintState.loading,
-    mintError: mintState.error,
-    mintData: mintState.data,
+    transactionData: transactionState.data,
+    transactionLoading: transactionState.loading,
+    transactionError: transactionState.error,
+    submissionData: submissionState.data,
+    submissionLoading: submissionState.loading,
+    submissionError: submissionState.error,
     mintNFT,
   };
 }

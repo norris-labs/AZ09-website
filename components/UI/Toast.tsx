@@ -1,40 +1,61 @@
-import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import * as React from "react";
 import { memo } from "react";
 
 type ToastComponentProps = {
-  mintError?: any;
-  mintLoading?: boolean;
-  toastIsClosed?: boolean;
-  toggleToast: (state: boolean) => void;
+  transactionError?: Error | undefined;
+  toastIsOpen?: boolean;
+  openToast: (state: boolean) => void;
 };
 
 function ToastComponent({
-  mintLoading,
-  mintError,
-  toggleToast,
-  toastIsClosed,
+  transactionError,
+  openToast,
+  toastIsOpen,
 }: ToastComponentProps) {
   return (
     <Snackbar
-      open={toastIsClosed}
+      open={toastIsOpen}
       autoHideDuration={6000}
-      onClose={() => toggleToast(false)}
       message={"toastMessage"}
       anchorOrigin={{
         vertical: "top",
-        horizontal: "right",
+        horizontal: "center",
       }}
     >
-      <Alert
-        severity="success"
-        sx={{
-          width: "100%",
-          fontSize: "1.1rem",
-        }}
-      >
-        Yoooo!
+      <Alert icon={false} severity="success">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            alignContent: "center",
+            width: "100%",
+            fontSize: "1.1rem",
+          }}
+        >
+          <CircularProgress color="inherit" thickness={5} size={20} />
+          <Box
+            sx={{
+              paddingLeft: "20px",
+              paddingRight: "20px",
+            }}
+          >
+            Minting NFT
+          </Box>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => openToast(false)}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
       </Alert>
     </Snackbar>
   );
@@ -48,12 +69,3 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export const Toast = memo(ToastComponent);
-
-// const txStateToToastMap: Record<TransactionState, AlertColor> = {
-//   Success: "success",
-//   PendingSignature: "info",
-//   Exception: "error",
-//   Fail: "error",
-//   None: "info",
-//   Mining: "info",
-// };
