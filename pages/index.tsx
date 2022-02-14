@@ -8,7 +8,7 @@ import {
   TabPanel,
 } from "../components/UI/Tabs/Tabs.styles";
 import { useCost, useMint, useMintedTokenIDs } from '../hooks'
-import {Toast} from '../components/UI/Toast'
+import {Alert} from '../components/UI/Alert'
 import Box from "@mui/material/Box";
 import { Container } from '@mui/material';
 import { EditionNames } from '../constants'
@@ -16,27 +16,30 @@ import { EditionNames } from '../constants'
 import type { NextPage } from 'next';
 import { PaginatedNFTs } from '../components/NFTs/PaginatedNFTs'
 import { useAccount, useNetwork } from 'wagmi'
+import { AlertState } from '../components/UI/Alert'
 
 enum Copy {
   Tab1 = 'Dark Edition',
   Tab2 = 'Light Edition',
 }
+const DISPLAY_SECONDS = 5 * 1000
 
 const Index: NextPage = () => {
-  const [toastIsOpen, openToast] = useState(false);
+  const [alertState, setAlertState] = useState<AlertState|null>(null);
   const [selectedEditionName, setSelectedEditionName] = useState<'light'|'dark'>('dark');
   const [currentTab, setCurrentTab] = useState<number>(0)
   const [activeMintId, setActiveMintId] = useState<number|null>(null)
   const cost = useCost();
   const {mintedTokenIDs} = useMintedTokenIDs(selectedEditionName);
   const [{data: accountData}] = useAccount()
+  const [networkData, _] = useNetwork();
   const {
-    loading,
+    waitLoading,
+    writeLoading,
     data,
     error,
     mintNFT
   } = useMint({editionName: selectedEditionName, cost})
-  const [networkData, _] = useNetwork();
 
   useEffect(() => {
     if (!activeMintId) return;
@@ -45,20 +48,37 @@ const Index: NextPage = () => {
   }, [activeMintId])
 
   useEffect(() => {
-    debugger;
-    if (loading === false) {
-      openToast(false);
+    if (writeLoading === false && waitLoading === false) {
+      setAlertState(null);
       setActiveMintId(null);
     }
-    if (loading && data) {
-      openToast(true);
-    }
 
-  }, [loading, data])
+    if (waitLoading) {
+      setAlertState({
+        message: 'Minting NFT...',
+        type: 'success',
+        showLoader: true
+      });
+    }
+  }, [writeLoading, waitLoading])
 
   useEffect(() => {
     if(!error) return;
-    alert(JSON.stringify(error));
+    let interval: NodeJS.Timer
+
+    setAlertState({
+      message: error.message,
+      type: 'error',
+      showLoader: false
+    });
+
+    setActiveMintId(null);
+
+    interval = setInterval(() => {
+      setAlertState(null)
+    }, DISPLAY_SECONDS)
+
+    return () => clearInterval(interval)
   }, [error])
 
   const selectTab = useCallback((tabName: 'dark'|'light') => {
@@ -72,10 +92,9 @@ const Index: NextPage = () => {
 
   return (
     <Container fixed maxWidth="xl">
-      <Toast
-        openToast={openToast}
-        toastIsOpen={toastIsOpen}
-        error={error}
+      <Alert
+        alertState={alertState}
+        setAlertState={setAlertState}
       />
       <Box
         sx={{
@@ -98,13 +117,15 @@ const Index: NextPage = () => {
       }
       </Box>
       <Box sx={{mb: 4}}>
-        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/>
+        {/* mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/> */}
         {/* selectedEditionName: {selectedEditionName}<br/> */}
         activeMintId: {JSON.stringify(activeMintId)}<br/>
+        writeLoading: {JSON.stringify(writeLoading)}<br/>
+        waitLoading: {JSON.stringify(waitLoading)}<br/>
         mintError: {JSON.stringify(error)}<br/>
-        data: {JSON.stringify(data)}<br/>
-        env: {process.env.NODE_ENV}<br/>
-        loading: {JSON.stringify(loading)}<br/>
+        alertState: {JSON.stringify(alertState)}<br/>
+        {/* data: {JSON.stringify(data)}<br/> */}
+        {/* env: {process.env.NODE_ENV}<br/> */}
         {/* currentTab: {currentTab}<br/> */}
         {/* NEXT_PUBLIC_CHAIN_ID: {Number(process.env.NEXT_PUBLIC_CHAIN_ID)}<br/> */}
         {/* cost : {cost} */}
@@ -130,7 +151,7 @@ const Index: NextPage = () => {
         <TabPanel value={0}>
           <PaginatedNFTs
             cost={cost}
-            loading={loading}
+            loading={waitLoading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}
@@ -142,7 +163,7 @@ const Index: NextPage = () => {
         <TabPanel value={1}>
           <PaginatedNFTs
             cost={cost}
-            loading={loading}
+            loading={waitLoading || writeLoading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}

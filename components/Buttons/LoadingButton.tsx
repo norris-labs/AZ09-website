@@ -2,7 +2,7 @@ import * as React from "react";
 import { LoadingButton as MuiLoadingButton } from "@mui/lab";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/system";
-import { ButtonBase } from "../Buttons";
+import { ButtonBase } from "./ButtonBase";
 
 const CustomLoadingButton = styled(MuiLoadingButton)`
   ${ButtonBase}

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useAccount } from "wagmi";
 import truncateEthAddress from "truncate-eth-address";
 import Blockies from "react-blockies";
-import { GreyButton } from "../Buttons";
+import { GreyButton } from "../Buttons/GreyButton";
 
 export const Account = () => {
   const [{ data: accountData }, disconnect] = useAccount({

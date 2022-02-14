@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNetwork } from "wagmi";
-import { GreyButton } from "../Buttons";
+import { GreyButton } from "../Buttons/GreyButton";
 
 export const NetworkSwitcher = () => {
   const [

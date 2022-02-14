@@ -1,6 +1,6 @@
 import { Link } from "@mui/material";
 import { styled } from "@mui/system";
-import { ButtonBase } from "../Buttons";
+import { ButtonBase } from "./ButtonBase";
 
 export const LinkButton = styled(Link)`
   ${ButtonBase}

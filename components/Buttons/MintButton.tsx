@@ -31,7 +31,12 @@ function MintButtonComponent({
   const handleMintBtnClick = useCallback(() => {
     setActiveMintId(id);
   }, [id]);
-  debugger;
+
+  console.log({
+    loading,
+    activeMintId,
+  });
+
   if (loading && activeMintId === id) {
     return <LoadingButton />;
   }

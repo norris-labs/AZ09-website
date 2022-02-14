@@ -56,7 +56,8 @@ export function useMint({
   }
 
   return {
-    loading: writeLoading || waitLoading,
+    writeLoading,
+    waitLoading,
     data: writeData || waitData,
     error: writeError || waitError,
     mintNFT,

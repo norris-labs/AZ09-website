@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GreyButton } from "../Buttons";
+import { GreyButton } from "../Buttons/GreyButton";
 import { useConnect } from "wagmi";
 import { useIsMounted } from "../../hooks";
 
