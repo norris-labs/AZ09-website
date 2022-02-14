@@ -12,7 +12,7 @@ enum Copy {
 }
 
 type MintButtonProps = {
-  mintLoading: boolean | undefined;
+  loading: boolean | undefined;
   id: number;
   selectedEditionName: string;
   setActiveMintId: (id: number) => void;
@@ -22,7 +22,7 @@ type MintButtonProps = {
 
 function MintButtonComponent({
   id,
-  mintLoading,
+  loading,
   setActiveMintId,
   isNFTMinted,
   activeMintId,
@@ -31,8 +31,8 @@ function MintButtonComponent({
   const handleMintBtnClick = useCallback(() => {
     setActiveMintId(id);
   }, [id]);
-
-  if (mintLoading && activeMintId === id) {
+  debugger;
+  if (loading && activeMintId === id) {
     return <LoadingButton />;
   }
 

@@ -4,17 +4,19 @@ import Box from "@mui/material/Box";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
-import * as React from "react";
+import { useEffect, forwardRef } from "react";
 import { memo } from "react";
 
+const DISPLAY_SECONDS = 5 * 1000;
+
 type ToastComponentProps = {
-  transactionError?: Error | undefined;
+  error?: Error | undefined;
   toastIsOpen?: boolean;
   openToast: (state: boolean) => void;
 };
 
 function ToastComponent({
-  transactionError,
+  error,
   openToast,
   toastIsOpen,
 }: ToastComponentProps) {
@@ -61,7 +63,7 @@ function ToastComponent({
   );
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {

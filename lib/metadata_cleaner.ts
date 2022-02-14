@@ -20,18 +20,6 @@ function isNumber(item: any) {
   return Number.isInteger(Number(item));
 }
 
-function findStringStart(items: NFTMetaData[]) {
-  for (let i = 0; i < items.length; i++) {
-    const [left, right] = items[i].attrString.split("");
-
-    if (isNumber(left) || isNumber(right)) {
-      continue;
-    } else {
-      return i;
-    }
-  }
-}
-
 function sortLeadingNumberLast(collection: NFTMetaData[]) {
   const leaderNumberItems: NFTMetaData[] = [];
   const alphaLeadingItems: NFTMetaData[] = [];

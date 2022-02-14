@@ -9,7 +9,7 @@ type NFTListProps = {
   selectedEditionName: string;
   isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
-  mintLoading: boolean | undefined;
+  loading: boolean | undefined;
 };
 
 function NFTListComponent({
@@ -19,7 +19,7 @@ function NFTListComponent({
   selectedEditionName,
   isNFTMinted,
   setActiveMintId,
-  mintLoading,
+  loading,
 }: NFTListProps) {
   if (!NFTCollection) return null;
 
@@ -35,7 +35,7 @@ function NFTListComponent({
             cost={cost}
             isNFTMinted={isNFTMinted}
             setActiveMintId={setActiveMintId}
-            mintLoading={mintLoading}
+            loading={loading}
           />
         );
       })}

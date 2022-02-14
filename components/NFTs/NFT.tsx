@@ -16,7 +16,7 @@ type NFTProps = {
   cost: string | undefined;
   isNFTMinted: (id: number) => boolean;
   setActiveMintId: (id: number) => void;
-  mintLoading: boolean | undefined;
+  loading: boolean | undefined;
 };
 
 function NFTComponent({
@@ -26,7 +26,7 @@ function NFTComponent({
   selectedEditionName,
   isNFTMinted,
   setActiveMintId,
-  mintLoading,
+  loading,
 }: NFTProps) {
   const [, leftCharacter, rightCharacter] = item.attributes.map(
     (attribute) => attribute.value
@@ -68,7 +68,7 @@ function NFTComponent({
             selectedEditionName={selectedEditionName}
             activeMintId={activeMintId}
             id={item.edition}
-            mintLoading={mintLoading}
+            loading={loading}
             setActiveMintId={setActiveMintId}
             isNFTMinted={isNFTMinted}
           />

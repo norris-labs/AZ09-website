@@ -12,7 +12,7 @@ import {Toast} from '../components/UI/Toast'
 import Box from "@mui/material/Box";
 import { Container } from '@mui/material';
 import { EditionNames } from '../constants'
-import { Header } from '../components/UI/Header'
+// import { Header } from '../components/UI/Header'
 import type { NextPage } from 'next';
 import { PaginatedNFTs } from '../components/NFTs/PaginatedNFTs'
 import { useAccount, useNetwork } from 'wagmi'
@@ -31,12 +31,9 @@ const Index: NextPage = () => {
   const {mintedTokenIDs} = useMintedTokenIDs(selectedEditionName);
   const [{data: accountData}] = useAccount()
   const {
-    submissionLoading,
-    transactionLoading,
-    transactionData,
-    submissionData,
-    transactionError,
-    submissionError,
+    loading,
+    data,
+    error,
     mintNFT
   } = useMint({editionName: selectedEditionName, cost})
   const [networkData, _] = useNetwork();
@@ -48,22 +45,21 @@ const Index: NextPage = () => {
   }, [activeMintId])
 
   useEffect(() => {
-    if (submissionLoading) {
-      return
-    };
+    debugger;
+    if (loading === false) {
+      openToast(false);
+      setActiveMintId(null);
+    }
+    if (loading && data) {
+      openToast(true);
+    }
 
-    setActiveMintId(null)
-  }, [submissionLoading])
+  }, [loading, data])
 
   useEffect(() => {
-    if (transactionLoading) {
-      openToast(true);
-      return
-    };
-
-    openToast(false);
-  }, [transactionLoading])
-
+    if(!error) return;
+    alert(JSON.stringify(error));
+  }, [error])
 
   const selectTab = useCallback((tabName: 'dark'|'light') => {
     setSelectedEditionName(tabName)
@@ -79,7 +75,7 @@ const Index: NextPage = () => {
       <Toast
         openToast={openToast}
         toastIsOpen={toastIsOpen}
-        transactionError={transactionError}
+        error={error}
       />
       <Box
         sx={{
@@ -102,15 +98,15 @@ const Index: NextPage = () => {
       }
       </Box>
       <Box sx={{mb: 4}}>
-        {/* mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/> */}
+        mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/>
         {/* selectedEditionName: {selectedEditionName}<br/> */}
-        mintError: {JSON.stringify(transactionError)}<br/>
-        mintData: {JSON.stringify(transactionData)}<br/>
-        mintData: {JSON.stringify(submissionData)}<br/>
-        {/* activeMintId: {JSON.stringify(activeMintId)}<br/> */}
+        activeMintId: {JSON.stringify(activeMintId)}<br/>
+        mintError: {JSON.stringify(error)}<br/>
+        data: {JSON.stringify(data)}<br/>
+        env: {process.env.NODE_ENV}<br/>
+        loading: {JSON.stringify(loading)}<br/>
         {/* currentTab: {currentTab}<br/> */}
         {/* NEXT_PUBLIC_CHAIN_ID: {Number(process.env.NEXT_PUBLIC_CHAIN_ID)}<br/> */}
-        submissionLoading: {JSON.stringify(submissionLoading)}<br/>
         {/* cost : {cost} */}
       </Box>
       {/* <Header /> */}
@@ -134,7 +130,7 @@ const Index: NextPage = () => {
         <TabPanel value={0}>
           <PaginatedNFTs
             cost={cost}
-            mintLoading={submissionLoading || transactionLoading}
+            loading={loading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}
@@ -146,7 +142,7 @@ const Index: NextPage = () => {
         <TabPanel value={1}>
           <PaginatedNFTs
             cost={cost}
-            mintLoading={submissionLoading || transactionLoading}
+            loading={loading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}

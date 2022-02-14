@@ -1,5 +1,5 @@
 import { useContractWrite, useWaitForTransaction } from "wagmi";
-
+import { useNetwork } from "wagmi";
 import AZ09DarkABI from "../abi/AZ09-dark-abi.json";
 import AZ09LightABI from "../abi/AZ09-light-abi.json";
 import { ethers } from "ethers";
@@ -11,6 +11,7 @@ export function useMint({
   editionName: string;
   cost: string | undefined;
 }) {
+  const [networkData, _] = useNetwork();
   const abi = editionName === "dark" ? AZ09DarkABI : AZ09LightABI;
   const address =
     editionName === "dark"
@@ -22,14 +23,28 @@ export function useMint({
     contractInterface: abi,
   };
 
-  const [submissionState, callMint] = useContractWrite(contractConfig, "mint");
+  const [writeResult, write] = useContractWrite(contractConfig, "mint");
 
-  const [transactionState] = useWaitForTransaction({
-    hash: submissionState.data?.hash,
+  const [waitResult] = useWaitForTransaction({
+    hash: writeResult.data?.hash,
   });
 
+  const {
+    data: writeData,
+    error: writeError,
+    loading: writeLoading,
+  } = writeResult;
+
+  const { data: waitData, error: waitError, loading: waitLoading } = waitResult;
+
   function mintNFT(id: number) {
+    if (networkData?.data?.chain?.unsupported) {
+      alert("Network not supported ss");
+      return;
+    }
+
     if (!cost) return;
+
     const costInEth = ethers.utils.parseEther(cost);
     const mintArgs = {
       args: id,
@@ -37,16 +52,13 @@ export function useMint({
         value: costInEth,
       },
     };
-    callMint(mintArgs);
+    write(mintArgs);
   }
 
   return {
-    transactionData: transactionState.data,
-    transactionLoading: transactionState.loading,
-    transactionError: transactionState.error,
-    submissionData: submissionState.data,
-    submissionLoading: submissionState.loading,
-    submissionError: submissionState.error,
+    loading: writeLoading || waitLoading,
+    data: writeData || waitData,
+    error: writeError || waitError,
     mintNFT,
   };
 }

@@ -16,7 +16,7 @@ type PaginatedNFTsProps = {
   editionName: string;
   selectedEditionName: string;
   setActiveMintId: (id: number) => void;
-  mintLoading: boolean | undefined;
+  loading: boolean | undefined;
 };
 
 const breakpointMap = {
@@ -35,7 +35,7 @@ function PaginatedNFTsComponent({
   selectedEditionName,
   activeMintId,
   setActiveMintId,
-  mintLoading,
+  loading,
   editionName,
 }: PaginatedNFTsProps) {
   const [pageResults, setPageResults] = useState<[] | NFTMetaData[]>([]);
@@ -174,7 +174,7 @@ function PaginatedNFTsComponent({
             selectedEditionName={selectedEditionName}
             isNFTMinted={isNFTMinted}
             setActiveMintId={setActiveMintId}
-            mintLoading={mintLoading}
+            loading={loading}
           />
           <div className="pagination-wrapper">
             <ReactPaginate
