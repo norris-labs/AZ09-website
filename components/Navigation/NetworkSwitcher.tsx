@@ -1,30 +1,49 @@
-import * as React from "react";
+import { useEffect } from "react";
 import { useNetwork } from "wagmi";
-import { GreyButton } from "../Buttons/GreyButton";
+import { AlertButton } from "../Buttons/AlertButton";
+import { AlertState } from "../UI/Alert";
+import { ALERT_DISPLAY_SECONDS } from "../../constants";
 
-export const NetworkSwitcher = () => {
+type NetworkSwitcherProps = {
+  setAlertState: (state: AlertState) => void;
+};
+
+export const NetworkSwitcher = ({ setAlertState }: NetworkSwitcherProps) => {
   const [
     { data: networkData, error: switchNetworkError },
     switchNetwork,
   ] = useNetwork();
 
+  useEffect(() => {
+    if (!switchNetworkError) return;
+
+    let interval: NodeJS.Timer;
+
+    setAlertState({
+      type: "error",
+      message: switchNetworkError?.message,
+      showLoader: false,
+    });
+
+    interval = setInterval(() => {
+      setAlertState(null);
+    }, ALERT_DISPLAY_SECONDS);
+  }, [switchNetworkError]);
+
   return (
     <div>
-      {/* <div>
-        Connected to {networkData.chain?.name ?? networkData.chain?.id}{" "}
-        {networkData.chain?.unsupported && "(unsupported)"}
-      </div> */}
-
       {switchNetwork &&
         networkData.chains.map((x) =>
           x.id === networkData.chain?.id ? null : (
-            <GreyButton key={x.id} onClick={() => switchNetwork(x.id)}>
+            <AlertButton
+              disableRipple
+              key={x.id}
+              onClick={() => switchNetwork(x.id)}
+            >
               Switch to {x.name}
-            </GreyButton>
+            </AlertButton>
           )
         )}
-
-      {switchNetworkError && switchNetworkError?.message}
     </div>
   );
 };

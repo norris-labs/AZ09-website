@@ -1,3 +1,5 @@
+import { NFTMetaData } from "../global";
+
 function sortABC(a: NFTMetaData, b: NFTMetaData) {
   if (a.attrString < b.attrString) {
     return -1;

@@ -1,6 +1,6 @@
 import { API_URL, BREAKPOINTS } from "../../constants";
 import React, { memo, useEffect, useState } from "react";
-
+import { NFTMetaData } from "../../global";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { NFTList } from "./NFTList";

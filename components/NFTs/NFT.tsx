@@ -8,6 +8,7 @@ import Image from "next/image";
 import { memo } from "react";
 import { MintButton } from "../Buttons/MintButton";
 import { TocDisplay } from "../UI/TocDisplay";
+import { NFTMetaData } from "../../global";
 
 type NFTProps = {
   item: NFTMetaData;

@@ -1,12 +1,36 @@
-import * as React from "react";
+import { useEffect } from "react";
 
+import { ALERT_DISPLAY_SECONDS } from "../../constants";
 import { GreyButton } from "../Buttons/GreyButton";
 import { useConnect } from "wagmi";
 import { useIsMounted } from "../../hooks";
+import { AlertState } from "../UI/Alert";
 
-export const Connect = () => {
+type ConnectProps = {
+  setAlertState: (state: AlertState) => void;
+};
+
+export const Connect = ({ setAlertState }: ConnectProps) => {
   const isMounted = useIsMounted();
   const [{ data, error, loading }, connect] = useConnect();
+
+  useEffect(() => {
+    if (!error) return;
+
+    let interval: NodeJS.Timer;
+
+    const message = error?.message ?? "Failed to connect";
+
+    setAlertState({
+      type: "error",
+      message: message,
+      showLoader: false,
+    });
+
+    interval = setInterval(() => {
+      setAlertState(null);
+    }, ALERT_DISPLAY_SECONDS);
+  }, [error]);
 
   return (
     <div>
@@ -24,7 +48,6 @@ export const Connect = () => {
           </GreyButton>
         ))}
       </div>
-      <div>{error && (error?.message ?? "Failed to connect")}</div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Account, Connect, NetworkSwitcher } from '../components/Navigation'
+import { Navigation } from '../components/Navigation'
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Tab,
@@ -9,20 +9,19 @@ import {
 } from "../components/UI/Tabs/Tabs.styles";
 import { useCost, useMint, useMintedTokenIDs } from '../hooks'
 import {Alert} from '../components/UI/Alert'
-import Box from "@mui/material/Box";
 import { Container } from '@mui/material';
-import { EditionNames } from '../constants'
-// import { Header } from '../components/UI/Header'
+import { EditionNames, ALERT_DISPLAY_SECONDS } from '../constants'
+import { Header } from '../components/UI/Header'
+import { Debugger } from '../components/UI/Debugger'
 import type { NextPage } from 'next';
 import { PaginatedNFTs } from '../components/NFTs/PaginatedNFTs'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useNetwork,useBalance } from 'wagmi'
 import { AlertState } from '../components/UI/Alert'
 
 enum Copy {
   Tab1 = 'Dark Edition',
   Tab2 = 'Light Edition',
 }
-const DISPLAY_SECONDS = 5 * 1000
 
 const Index: NextPage = () => {
   const [alertState, setAlertState] = useState<AlertState|null>(null);
@@ -32,14 +31,22 @@ const Index: NextPage = () => {
   const cost = useCost();
   const {mintedTokenIDs} = useMintedTokenIDs(selectedEditionName);
   const [{data: accountData}] = useAccount()
+  const [{ data: userBalance }] = useBalance({
+    addressOrName: accountData?.address,
+  })
   const [networkData, _] = useNetwork();
   const {
     waitLoading,
     writeLoading,
-    data,
+    writeData,
+    waitData,
     error,
     mintNFT
-  } = useMint({editionName: selectedEditionName, cost})
+  } = useMint({
+    editionName: selectedEditionName,
+    cost,
+    userFunds: userBalance
+  })
 
   useEffect(() => {
     if (!activeMintId) return;
@@ -48,7 +55,15 @@ const Index: NextPage = () => {
   }, [activeMintId])
 
   useEffect(() => {
-    if (writeLoading === false && waitLoading === false) {
+    const completeSuccess =
+      !error &&
+      writeLoading === false &&
+      waitLoading === false &&
+      activeMintId &&
+      waitData &&
+      writeData;
+
+    if (completeSuccess) {
       setAlertState(null);
       setActiveMintId(null);
     }
@@ -60,7 +75,7 @@ const Index: NextPage = () => {
         showLoader: true
       });
     }
-  }, [writeLoading, waitLoading])
+  }, [waitData, waitLoading])
 
   useEffect(() => {
     if(!error) return;
@@ -76,7 +91,7 @@ const Index: NextPage = () => {
 
     interval = setInterval(() => {
       setAlertState(null)
-    }, DISPLAY_SECONDS)
+    }, ALERT_DISPLAY_SECONDS)
 
     return () => clearInterval(interval)
   }, [error])
@@ -96,41 +111,25 @@ const Index: NextPage = () => {
         alertState={alertState}
         setAlertState={setAlertState}
       />
-      <Box
-        sx={{
-          mt: 5,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "flex-end",
+      <Navigation
+        accountData={accountData}
+        networkData={networkData}
+        setAlertState={setAlertState}
+      />
+
+      {/* <Debugger
+        vars={{
+          activeMintId: activeMintId,
+          writeLoading: writeLoading,
+          waitLoading: waitLoading,
+          confirmations: waitData?.confirmations,
+          error: error,
+          alertState: alertState,
+          writeData: writeData,
+          waitData: waitData,
         }}
-      >
-      {accountData?.address ?
-        <>
-          {networkData?.data?.chain?.unsupported ?
-            <NetworkSwitcher />
-            :
-            <Account />
-          }
-        </>
-        :
-        <Connect />
-      }
-      </Box>
-      <Box sx={{mb: 4}}>
-        {/* mintedTokenIDs: {JSON.stringify(mintedTokenIDs)} <br/> */}
-        {/* selectedEditionName: {selectedEditionName}<br/> */}
-        activeMintId: {JSON.stringify(activeMintId)}<br/>
-        writeLoading: {JSON.stringify(writeLoading)}<br/>
-        waitLoading: {JSON.stringify(waitLoading)}<br/>
-        mintError: {JSON.stringify(error)}<br/>
-        alertState: {JSON.stringify(alertState)}<br/>
-        {/* data: {JSON.stringify(data)}<br/> */}
-        {/* env: {process.env.NODE_ENV}<br/> */}
-        {/* currentTab: {currentTab}<br/> */}
-        {/* NEXT_PUBLIC_CHAIN_ID: {Number(process.env.NEXT_PUBLIC_CHAIN_ID)}<br/> */}
-        {/* cost : {cost} */}
-      </Box>
-      {/* <Header /> */}
+      /> */}
+      <Header />
 
       <TabContainer defaultValue={0} id="tab-container">
         <TabList>
@@ -151,7 +150,7 @@ const Index: NextPage = () => {
         <TabPanel value={0}>
           <PaginatedNFTs
             cost={cost}
-            loading={waitLoading}
+            loading={waitLoading || writeLoading}
             isNFTMinted={isNFTMinted}
             activeMintId={activeMintId}
             selectedEditionName={selectedEditionName}

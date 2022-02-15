@@ -2,7 +2,7 @@
 import _ from "lodash";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { EditionNames, EDITIONS, ITEMS_PER_PAGE } from '../../constants';
-
+import { NFTMetaData } from "../../global";
 
 export default function handler(
   req: NextApiRequest,

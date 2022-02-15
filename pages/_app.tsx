@@ -8,7 +8,7 @@ import Head from 'next/head';
 import { Provider as WagmiProvider } from "wagmi";
 import { ThemeProvider } from "@mui/material/styles";
 import { providers } from 'ethers'
-import { theme } from "../config";
+import { theme } from "../config/theme";
 
 const ankrProvider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC as string)
 const connector = process.env.NODE_ENV === 'development' ? fantomTestConnector : fantomConnector;

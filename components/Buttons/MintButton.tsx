@@ -32,11 +32,6 @@ function MintButtonComponent({
     setActiveMintId(id);
   }, [id]);
 
-  console.log({
-    loading,
-    activeMintId,
-  });
-
   if (loading && activeMintId === id) {
     return <LoadingButton />;
   }

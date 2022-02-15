@@ -19,15 +19,6 @@ export const Account = () => {
           {truncateEthAddress(accountData.address)}
         </GreyButton>
       </div>
-
-      {/* <div>
-        {accountData?.ens?.name ?? accountData?.address}
-        {accountData?.ens ? ` (${accountData?.address})` : null}
-      </div> */}
-
-      {/* {accountData?.ens?.avatar && (
-        <img src={accountData.ens.avatar} style={{ height: 40, width: 40 }} />
-      )} */}
     </div>
   );
 };

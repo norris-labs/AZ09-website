@@ -1,6 +1,7 @@
 import Grid from "@mui/material/Grid";
 import { NFT } from "./NFT";
 import { memo } from "react";
+import { NFTMetaData } from "../../global";
 
 type NFTListProps = {
   NFTCollection: NFTMetaData[] | [];

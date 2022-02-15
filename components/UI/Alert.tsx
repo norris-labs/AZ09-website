@@ -13,7 +13,7 @@ export type AlertState = {
   type: AlertTypes;
   message: string;
   showLoader: boolean;
-};
+} | null;
 
 type AlertComponentProps = {
   alertState: AlertState | null;
