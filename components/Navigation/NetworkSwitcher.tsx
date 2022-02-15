@@ -4,10 +4,6 @@ import { AlertButton } from "../Buttons/AlertButton";
 import { AlertState } from "../UI/Alert";
 import { ALERT_DISPLAY_SECONDS } from "../../constants";
 
-type NetworkSwitcherProps = {
-  setAlertState: (state: AlertState) => void;
-};
-
 export const NetworkSwitcher = ({ setAlertState }: NetworkSwitcherProps) => {
   const [
     { data: networkData, error: switchNetworkError },
@@ -46,4 +42,8 @@ export const NetworkSwitcher = ({ setAlertState }: NetworkSwitcherProps) => {
         )}
     </div>
   );
+};
+
+type NetworkSwitcherProps = {
+  setAlertState: (state: AlertState) => void;
 };
