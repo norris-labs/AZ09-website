@@ -1,14 +1,14 @@
-import { API_URL, BREAKPOINTS } from '../../constants';
-import React, { memo, useEffect, useState } from 'react';
-
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import { NFTList } from './NFTList';
-import { NFTMetaData } from '../../global';
-import ReactPaginate from 'react-paginate';
-import { SearchBox } from '../UI/SearchBox';
-import axios from 'axios';
-import useBreakpoint from 'use-breakpoint';
+// import "../../styles/pagination.scss";
+import { API_URL, BREAKPOINTS } from "../../constants";
+import React, { memo, useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import { NFTList } from "./NFTList";
+import { NFTMetaData } from "../../global";
+import ReactPaginate from "react-paginate";
+import { SearchBox } from "../UI/SearchBox";
+import axios from "axios";
+import useBreakpoint from "use-breakpoint";
 
 type PaginatedNFTsProps = {
   activeMintId: number | null;
@@ -27,7 +27,9 @@ const breakpointMap = {
 };
 
 function scrollUp(): void {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelector("#tab-container")?.scrollIntoView({
+    behavior: "smooth",
+  });
 }
 
 function PaginatedNFTsComponent({
@@ -46,9 +48,9 @@ function PaginatedNFTsComponent({
   const [pageCount, setPageCount] = useState(0);
   const [pageNum, setPageNum] = useState(0);
   const [pageNumDisplay, setPageNumDisplay] = useState(1);
-  const [searchTerm, setsearchTerm] = useState<string>('');
+  const [searchTerm, setsearchTerm] = useState<string>("");
 
-  const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
+  const { breakpoint } = useBreakpoint(BREAKPOINTS, "desktop");
 
   useEffect(() => {
     const body = {
@@ -102,9 +104,9 @@ function PaginatedNFTsComponent({
       <Box
         sx={{
           py: 4,
-          display: 'flex',
-          justifyContent: 'space-between',
-          '@media (max-width: 599.95px)': {
+          display: "flex",
+          justifyContent: "space-between",
+          "@media (max-width: 599.95px)": {
             pt: 1,
             pb: 4,
           },
@@ -114,14 +116,14 @@ function PaginatedNFTsComponent({
           <Grid item xs={12} sm={6}>
             <Box
               sx={{
-                height: '100%',
-                fontSize: '1.25rem',
-                padding: '15px',
-                display: 'flex',
-                alignItems: 'center',
-                alignContent: 'center',
-                justifyContent: 'space-between',
-                '@media (max-width: 599.95px)': {
+                height: "100%",
+                fontSize: "1.25rem",
+                padding: "15px",
+                display: "flex",
+                alignItems: "center",
+                alignContent: "center",
+                justifyContent: "space-between",
+                "@media (max-width: 599.95px)": {
                   pb: 3,
                 },
               }}
@@ -132,17 +134,17 @@ function PaginatedNFTsComponent({
               {searchTerm && (
                 <Box
                   sx={{
-                    color: '#a8a8a8',
+                    color: "#a8a8a8",
                   }}
                 >
-                  {pageResults.length} search{' '}
-                  {pageResults.length > 1 ? 'results' : 'result'}
+                  {pageResults.length} search{" "}
+                  {pageResults.length > 1 ? "results" : "result"}
                 </Box>
               )}
             </Box>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: "flex" }}>
               <SearchBox
                 onChange={(inputStr) => {
                   setsearchTerm(inputStr);
@@ -155,13 +157,13 @@ function PaginatedNFTsComponent({
       {runningSearch ? (
         <Box
           sx={{
-            paddingTop: '150px',
-            minHeight: '1000px',
-            display: 'flex',
-            alignContent: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: '1.5rem',
+            paddingTop: "150px",
+            minHeight: "1000px",
+            display: "flex",
+            alignContent: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "1.5rem",
           }}
         >
           Loading...
@@ -177,17 +179,17 @@ function PaginatedNFTsComponent({
             setActiveMintId={setActiveMintId}
             loading={loading}
           />
-          <div className='pagination-wrapper'>
+          <div className="pagination-wrapper">
             <ReactPaginate
-              breakLabel='...'
-              nextLabel='&rarr;'
+              breakLabel="..."
+              nextLabel="&rarr;"
               onPageChange={(e) => handlePageChange(e.selected)}
               pageCount={pageCount}
-              previousLabel='&larr;'
+              previousLabel="&larr;"
               pageRangeDisplayed={breakpointMap[breakpoint]}
               marginPagesDisplayed={breakpointMap[breakpoint]}
-              pageLinkClassName='pagination-page-link'
-              className='pagination-container'
+              pageLinkClassName="pagination-page-link"
+              className="pagination-container"
             />
           </div>
         </>

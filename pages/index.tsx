@@ -1,4 +1,4 @@
-import { Navigation } from '../components/Navigation'
+import { ALERT_DISPLAY_SECONDS, EditionNames } from '../constants'
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Tab,
@@ -7,16 +7,17 @@ import {
   TabList,
   TabPanel,
 } from "../components/UI/Tabs/Tabs.styles";
+import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { useCost, useMint, useMintedTokenIDs } from '../hooks'
+
 import {Alert} from '../components/UI/Alert'
+import { AlertState } from '../components/UI/Alert'
 import { Container } from '@mui/material';
-import { EditionNames, ALERT_DISPLAY_SECONDS } from '../constants'
-import { Header } from '../components/UI/Header'
 import { Debugger } from '../components/UI/Debugger'
+import { Header } from '../components/UI/Header'
+import { Navigation } from '../components/Navigation'
 import type { NextPage } from 'next';
 import { PaginatedNFTs } from '../components/NFTs/PaginatedNFTs'
-import { useAccount, useNetwork,useBalance } from 'wagmi'
-import { AlertState } from '../components/UI/Alert'
 
 enum Copy {
   Tab1 = 'Dark Edition',

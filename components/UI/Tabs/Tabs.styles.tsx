@@ -6,7 +6,9 @@ import TabUnstyled, { tabUnstyledClasses } from "@mui/base/TabUnstyled";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 
-export const TabContainer = TabsUnstyled;
+export const TabContainer = styled(TabsUnstyled)`
+  padding-top: 10px;
+`;
 
 const radius = "10px";
 
@@ -17,10 +19,8 @@ export const Tab = styled(TabUnstyled)`
   display: flex;
   align-items: center;
   align-content: center;
-  font-size: 1.45rem;
   font-weight: bold;
   background-color: transparent;
-  white-space: nowrap;
   width: 100%;
   border-radius: ${radius};
   padding: 20px;
@@ -31,8 +31,22 @@ export const Tab = styled(TabUnstyled)`
   color: #fff;
   outline: none;
   outline-offset: 2px;
-  @media (max-width: 599.95px) {
-    font-size: 1.1rem;
+  font-size: 1rem;
+
+  ${(props) => props.theme.breakpoints.up("sm")} {
+    font-size: 1.2rem;
+  }
+
+  ${(props) => props.theme.breakpoints.up("md")} {
+    font-size: 1.4rem;
+  }
+
+  ${(props) => props.theme.breakpoints.up("lg")} {
+    font-size: 1.6rem;
+  }
+
+  ${(props) => props.theme.breakpoints.up("xl")} {
+    font-size: 1.8rem;
   }
 
   &.${tabUnstyledClasses.selected} {

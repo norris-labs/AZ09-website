@@ -3,9 +3,9 @@ import { createTheme } from "@mui/material/styles";
 export const theme = createTheme({
   palette: {
     success: {
-      light: "#5EE0B7",
-      main: "#62C3A4",
-      dark: "#5BB598",
+      light: "hsl(255deg 97% 62%)",
+      main: "hsl(255deg 97% 58%)",
+      dark: "hsl(255deg 97% 45%)",
     },
     error: {
       main: "#FC542B",
@@ -14,6 +14,11 @@ export const theme = createTheme({
     primary: {
       main: "#FC542B",
       dark: "#DC3309",
+    },
+    secondary: {
+      light: "hsl(255deg 97% 62%)",
+      main: "hsl(255deg 97% 60%)",
+      dark: "hsl(255deg 97% 45%)",
     },
   },
 });

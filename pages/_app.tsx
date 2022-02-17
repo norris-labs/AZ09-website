@@ -1,4 +1,5 @@
-import "../styles/globals.css";
+import "../styles/globals.scss";
+import "../styles/pagination.scss";
 import * as React from "react";
 
 import { fantomConnector, fantomTestConnector } from '../config/fantom_chain';
