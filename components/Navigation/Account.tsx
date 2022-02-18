@@ -3,8 +3,9 @@ import { useAccount } from "wagmi";
 import truncateEthAddress from "truncate-eth-address";
 import Blockies from "react-blockies";
 import { GreyButton } from "../Buttons/GreyButton";
+import { memo } from "react";
 
-export const Account = () => {
+export const AccountComponent = () => {
   const [{ data: accountData }, disconnect] = useAccount({
     fetchEns: true,
   });
@@ -22,3 +23,5 @@ export const Account = () => {
     </div>
   );
 };
+
+export const Account = memo(AccountComponent);

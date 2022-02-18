@@ -5,12 +5,13 @@ import { GreyButton } from "../Buttons/GreyButton";
 import { useConnect } from "wagmi";
 import { useIsMounted } from "../../hooks";
 import { AlertState } from "../UI/Alert";
+import { memo } from "react";
 
 type ConnectProps = {
   setAlertState: (state: AlertState) => void;
 };
 
-export const Connect = ({ setAlertState }: ConnectProps) => {
+const ConnectComponent = ({ setAlertState }: ConnectProps) => {
   const isMounted = useIsMounted();
   const [{ data, error, loading }, connect] = useConnect();
 
@@ -51,3 +52,5 @@ export const Connect = ({ setAlertState }: ConnectProps) => {
     </div>
   );
 };
+
+export const Connect = memo(ConnectComponent);

@@ -117,19 +117,6 @@ const Index: NextPage = () => {
         networkData={networkData}
         setAlertState={setAlertState}
       />
-
-      {/* <Debugger
-        vars={{
-          activeMintId: activeMintId,
-          writeLoading: writeLoading,
-          waitLoading: waitLoading,
-          confirmations: waitData?.confirmations,
-          error: error,
-          alertState: alertState,
-          writeData: writeData,
-          waitData: waitData,
-        }}
-      /> */}
       <Header />
 
       <TabContainer defaultValue={0} id="tab-container">
