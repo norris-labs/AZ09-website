@@ -16,9 +16,9 @@ export const theme = createTheme({
       dark: "#DC3309",
     },
     secondary: {
-      light: "hsl(255deg 46% 40%)",
-      main: "hsl(255deg 46% 60%)",
-      dark: "hsl(255deg 46% 50%)",
+      light: "hsl(203deg 17% 57%)",
+      main: "hsl(203deg 17% 52%)",
+      dark: "hsl(203deg 17% 47%)",
     },
   },
 });

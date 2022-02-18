@@ -57,7 +57,6 @@ export function useMint({
 
     if (!cost) return;
     const costInEth = ethers.utils.parseEther(cost);
-
     if (Number(userFunds?.formatted) < Number(cost)) {
       alert("not enough FTM");
       return;

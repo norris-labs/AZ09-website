@@ -9,7 +9,9 @@ import React, {
 import { Box, Link, Typography } from "@mui/material";
 import Image from "next/image";
 import { gsap } from "gsap";
-import { useInterval } from "rooks";
+import { useIntervalWhen, useInViewRef } from "rooks";
+import useBreakpoint from "use-breakpoint";
+import { BREAKPOINTS } from "../../constants";
 
 const TILE_HEIGHT = 271;
 const TOTAL_TILES = 26;
@@ -22,6 +24,8 @@ function HeaderComponent() {
   const [currentTile, setCurrentTile] = useState(0);
   const [y1, setY1] = useState(0);
   const [y2, setY2] = useState(-SLOT_HEIGHT + TILE_HEIGHT);
+  const [headerRef, headerInView] = useInViewRef();
+  const { breakpoint } = useBreakpoint(BREAKPOINTS, "mobile");
 
   const incrementTile = useCallback(() => {
     const nextTile = currentTile + SKIP;
@@ -51,8 +55,8 @@ function HeaderComponent() {
     if (!slot1.current) return;
     gsap.to(slot1.current, {
       y: y1,
-      ease: "elastic.out(1, 0.75)",
-      duration: ".75",
+      ease: "elastic.out(.8, 0.45)",
+      duration: ".9",
     });
   }, [y1]);
 
@@ -60,30 +64,32 @@ function HeaderComponent() {
     if (!slot2.current) return;
     gsap.to(slot2.current, {
       y: y2,
-      ease: "elastic.out(1, 0.75)",
-      duration: ".75",
+      ease: "elastic.out(.8, 0.45)",
+      duration: ".9",
     });
   }, [y2]);
 
-  useInterval(
+  useIntervalWhen(
     () => {
       incrementTile();
     },
-    2500,
+    2000,
+    headerInView,
     true
   );
 
   return (
     <Box
       sx={{
-        my: 10,
+        my: breakpoint === "mobile" || breakpoint === "tablet" ? 5 : 10,
         mx: "auto",
         maxWidth: "1200px",
       }}
     >
       <Box
+        ref={headerRef}
         sx={{
-          display: "flex",
+          display: breakpoint === "desktop" ? "flex" : "block",
         }}
       >
         <Box
@@ -110,18 +116,29 @@ function HeaderComponent() {
           </Box>
         </Box>
         <HeaderText>
-          AZ09 is a collection of 2,592 unique, programmatically generated
-          monogram{" "}
+          AZ09 is a collection of programmatically generated{" "}
           <Link target="_blank" href="https://ethereum.org/en/nft/">
             NFTs
           </Link>{" "}
-          on the{" "}
+          (ERC-721) on the{" "}
           <Link target="_blank" href="https://fantom.foundation/">
             Fantom network
           </Link>
-          . All Monograms contain two characters from the permutations of A-Z
-          and 0-9. All monograms are unique. Comes in two variations: Dark and
-          Light.{" "}
+          . AZ09 NFTs contain all the unique permutations of A-Z and 0-9. No
+          combination repeated. 2,592 total supply. Comes in two variations:{" "}
+          <Link
+            target="_blank"
+            href={`https://paintswap.finance/marketplace/collections/${process.env.NEXT_PUBLIC_DARK_CONTRACT_ADDRESS}`}
+          >
+            Dark
+          </Link>{" "}
+          and{" "}
+          <Link
+            target="_blank"
+            href={`https://paintswap.finance/marketplace/collections/${process.env.NEXT_PUBLIC_LIGHT_CONTRACT_ADDRESS}`}
+          >
+            Light.
+          </Link>{" "}
         </HeaderText>
       </Box>
     </Box>

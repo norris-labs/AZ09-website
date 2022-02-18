@@ -1,4 +1,3 @@
-// import "../../styles/pagination.scss";
 import { API_URL, BREAKPOINTS } from "../../constants";
 import React, { memo, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
@@ -184,6 +183,7 @@ function PaginatedNFTsComponent({
               breakLabel="..."
               nextLabel="&rarr;"
               onPageChange={(e) => handlePageChange(e.selected)}
+              forcePage={pageNum}
               pageCount={pageCount}
               previousLabel="&larr;"
               pageRangeDisplayed={breakpointMap[breakpoint]}

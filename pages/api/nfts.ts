@@ -19,14 +19,6 @@ export default function handler(
     edition = 'dark'
   } = req.body;
 
-  console.log({
-    edition,
-    searchTerm,
-    pageNum,
-    method: req.method
-  });
-
-
   if (!searchTerm)  {
     const pageResults = calcPageResults(EDITIONS[edition as EditionNames], pageNum)
     const pageCount = calcPageCount(EDITIONS[edition as EditionNames]);
@@ -46,7 +38,6 @@ export default function handler(
     pageNum
   })
 }
-
 
 function filterNFTs(searchTerm: string, edition: string) {
   if (searchTerm === "" || searchTerm === null) {

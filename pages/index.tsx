@@ -13,7 +13,7 @@ import { useCost, useMint, useMintedTokenIDs } from '../hooks'
 import {Alert} from '../components/UI/Alert'
 import { AlertState } from '../components/UI/Alert'
 import { Container } from '@mui/material';
-import { Debugger } from '../components/UI/Debugger'
+import { Footer }from '../components/UI/Footer';
 import { Header } from '../components/UI/Header'
 import { Navigation } from '../components/Navigation'
 import type { NextPage } from 'next';
@@ -29,7 +29,7 @@ const Index: NextPage = () => {
   const [selectedEditionName, setSelectedEditionName] = useState<'light'|'dark'>('dark');
   const [currentTab, setCurrentTab] = useState<number>(0)
   const [activeMintId, setActiveMintId] = useState<number|null>(null)
-  const cost = useCost();
+  const cost = useCost(selectedEditionName);
   const {mintedTokenIDs} = useMintedTokenIDs(selectedEditionName);
   const [{data: accountData}] = useAccount()
   const [{ data: userBalance }] = useBalance({
@@ -107,12 +107,14 @@ const Index: NextPage = () => {
   }, [mintedTokenIDs])
 
   return (
+    <>
     <Container fixed maxWidth="xl">
       <Alert
         alertState={alertState}
         setAlertState={setAlertState}
       />
       <Navigation
+        selectedEditionName={selectedEditionName}
         accountData={accountData}
         networkData={networkData}
         setAlertState={setAlertState}
@@ -160,6 +162,8 @@ const Index: NextPage = () => {
         </TabPanel>
       </TabContainer>
     </Container>
+    <Footer />
+    </>
   )
 }
 
